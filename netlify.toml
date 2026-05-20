@@ -1,0 +1,21 @@
+# Configuracion de deploy en Netlify para el frontend Angular.
+# El backend Express y el script Python NO corren en Netlify (es hosting estatico);
+# necesitan alojarse aparte (Render, Railway, Fly.io, etc.) y configurar el redirect
+# /api/* hacia ese host.
+
+[build]
+  # El monorepo tiene el frontend en una subcarpeta
+  base    = "vanguard_transit/frontend"
+  command = "npm run build"
+  # Angular 17+ (builder "application") emite los estaticos bajo /browser
+  publish = "dist/vanguard-transit-frontend/browser"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback: cualquier ruta profunda (/planning/heuristic, /dashboard, etc.)
+# se sirve con index.html y deja que Angular Router resuelva.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
