@@ -2,6 +2,19 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 
+// El proxy de Netlify mata cualquier respuesta que tarde mas de 26 s.
+// Para el POST que dispara la ejecucion Python (2-3 min) llamamos directo
+// al backend en Render. Las llamadas cortas (status, download) siguen via
+// el proxy de Netlify y usan rutas relativas.
+const RENDER_BACKEND = 'https://asint-transit.onrender.com';
+
+function longRunUrl(path: string): string {
+  if (typeof window === 'undefined') return path;
+  const host = window.location.hostname;
+  const isLocal = host === 'localhost' || host === '127.0.0.1';
+  return isLocal ? path : `${RENDER_BACKEND}${path}`;
+}
+
 interface OutputFile {
   readonly name: string;
   readonly size: number;
@@ -202,7 +215,7 @@ export class PlanningHeuristicPage {
     const form = new FormData();
     form.append('file', file, file.name);
 
-    this.http.post<RunResponse>('/api/heuristic/run', form).subscribe({
+    this.http.post<RunResponse>(longRunUrl('/api/heuristic/run'), form).subscribe({
       next: (res) => {
         this.running.set(false);
         this.result.set(res);

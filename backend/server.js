@@ -5,7 +5,11 @@ import heuristicRouter from './routes/heuristic.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
+const DEFAULT_ORIGINS = [
+  'http://localhost:5173',
+  'https://asint-transit.netlify.app',
+];
+const allowedOrigins = (process.env.CORS_ORIGINS || DEFAULT_ORIGINS.join(','))
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
