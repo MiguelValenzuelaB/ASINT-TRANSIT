@@ -1,0 +1,165 @@
+@if (viewModel$ | async; as vm) {
+  <section class="space-y-8 p-5 md:p-8">
+    <div class="mx-auto max-w-[1600px] space-y-8">
+      <header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 class="font-headline text-3xl font-bold uppercase tracking-tight text-on-surface md:text-4xl">Resumen operacional</h1>
+          <p class="mt-1 text-sm text-on-surface-variant">Telemetría en tiempo real y optimización de flota</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <app-status-badge label="Sistema nominal" tone="primary"></app-status-badge>
+          <app-status-badge [label]="lastAction()" tone="neutral"></app-status-badge>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <app-metric-card label="Flota activa" [value]="vm.kpis.activeFleet.value" [unit]="vm.kpis.activeFleet.unit ?? ''" [meta]="vm.kpis.activeFleet.trend ?? ''"></app-metric-card>
+        <app-metric-card label="Tasa de eficiencia" [value]="vm.kpis.efficiencyRate.value" [unit]="vm.kpis.efficiencyRate.unit ?? ''" [meta]="'Objetivo: ' + (vm.kpis.efficiencyRate.target ?? 92) + '%'" icon="check_circle" tone="secondary"></app-metric-card>
+        <app-metric-card label="Consumo de combustible" [value]="vm.kpis.fuelConsumption.value" [unit]="vm.kpis.fuelConsumption.unit ?? ''" [meta]="vm.kpis.fuelConsumption.trend ?? ''" icon="trending_down" tone="tertiary"></app-metric-card>
+        <app-metric-card label="Distancia en vacío" [value]="vm.kpis.deadheadDistance.value" [unit]="vm.kpis.deadheadDistance.unit ?? ''" [meta]="vm.kpis.deadheadDistance.alert ?? ''" icon="warning" tone="error"></app-metric-card>
+      </div>
+
+      <div class="grid grid-cols-1 gap-8 xl:grid-cols-3">
+        <section class="space-y-4 xl:col-span-2">
+          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <h2 class="section-title">Topología de flota en vivo</h2>
+            <div class="flex gap-4">
+              <button
+                class="font-label text-[10px] font-bold uppercase tracking-widest"
+                [ngClass]="activeLayer() === 'thermal' ? 'text-primary' : 'text-on-surface-variant'"
+                type="button"
+                (click)="setLayer('thermal')"
+              >
+                Capa: Térmica
+              </button>
+              <button
+                class="font-label text-[10px] font-bold uppercase tracking-widest"
+                [ngClass]="activeLayer() === 'traffic' ? 'text-primary' : 'text-on-surface-variant'"
+                type="button"
+                (click)="setLayer('traffic')"
+              >
+                Capa: Tráfico
+              </button>
+            </div>
+          </div>
+
+          <div class="relative h-[420px] overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-lowest md:h-[520px]">
+            <div #fleetMap class="fleet-map h-full w-full"></div>
+            <div class="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background/80 to-transparent"></div>
+            <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background/85 to-transparent"></div>
+
+            <div class="absolute left-4 top-4 w-64 rounded-xl border border-outline-variant/20 bg-surface-container-high/90 p-4 shadow-xl backdrop-blur">
+              <p class="mb-3 font-label text-[10px] font-bold uppercase tracking-widest text-tertiary">{{ activeLayer() === 'thermal' ? 'Zonas de demanda' : 'Corredores de tráfico' }}</p>
+              <div class="space-y-3">
+                <div>
+                  <div class="mb-1 flex justify-between font-label text-[10px] uppercase text-on-surface-variant">
+                    <span>{{ activeLayer() === 'thermal' ? 'Centro operacional' : 'Eje central' }}</span>
+                    <span class="font-bold text-primary">{{ activeLayer() === 'thermal' ? 'Alta' : 'Moderado' }}</span>
+                  </div>
+                  <div class="h-1 overflow-hidden rounded-full bg-surface-container"><div class="h-full bg-primary" [style.width]="activeLayer() === 'thermal' ? '88%' : '68%'"></div></div>
+                </div>
+                <div>
+                  <div class="mb-1 flex justify-between font-label text-[10px] uppercase text-on-surface-variant">
+                    <span>{{ activeLayer() === 'thermal' ? 'Intermodal oriente' : 'Conexión poniente' }}</span>
+                    <span class="font-bold text-tertiary">{{ activeLayer() === 'thermal' ? 'Media' : 'Alto' }}</span>
+                  </div>
+                  <div class="h-1 overflow-hidden rounded-full bg-surface-container"><div class="h-full bg-tertiary" [style.width]="activeLayer() === 'thermal' ? '72%' : '82%'"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="absolute bottom-4 left-4 max-w-[calc(100%-2rem)] rounded-xl border border-outline-variant/20 bg-surface-container-high/90 p-3 shadow-xl backdrop-blur">
+              <p class="mb-2 font-label text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">Vehículos en vivo</p>
+              <div class="flex max-w-full gap-2 overflow-x-auto pb-1">
+                @for (vehicle of vehicles; track vehicle.id) {
+                  <button
+                    class="min-w-32 rounded-lg border px-3 py-2 text-left transition-colors"
+                    [ngClass]="selectedVehicle().id === vehicle.id ? 'border-primary bg-primary/10' : 'border-outline-variant/20 bg-surface-container hover:border-primary/40'"
+                    type="button"
+                    (click)="focusVehicle(vehicle)"
+                  >
+                    <span class="block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface">{{ vehicle.id }}</span>
+                    <span class="block text-[10px]" [ngClass]="vehicleStatusClass(vehicle.status)">{{ vehicleStatusLabel(vehicle.status) }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="absolute bottom-4 right-4 w-60 rounded-xl border border-outline-variant/20 bg-surface-container-high/90 p-4 shadow-xl backdrop-blur">
+              <div class="mb-3 flex items-start justify-between gap-3">
+                <div>
+                  <p class="font-label text-[9px] uppercase tracking-widest text-on-surface-variant">Seleccionado</p>
+                  <p class="font-headline text-lg font-bold text-primary">{{ selectedVehicle().id }}</p>
+                </div>
+                <span class="rounded bg-primary/10 px-2 py-1 font-label text-[9px] font-bold uppercase text-primary">{{ selectedVehicle().delay }}</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <p class="font-label text-[9px] uppercase text-on-surface-variant">Línea</p>
+                  <p class="font-bold text-on-surface">{{ selectedVehicle().line }}</p>
+                </div>
+                <div>
+                  <p class="font-label text-[9px] uppercase text-on-surface-variant">Carga</p>
+                  <p class="font-bold text-on-surface">{{ selectedVehicle().load }}%</p>
+                </div>
+                <div>
+                  <p class="font-label text-[9px] uppercase text-on-surface-variant">Batería</p>
+                  <p class="font-bold text-tertiary">{{ selectedVehicle().battery }}%</p>
+                </div>
+                <div>
+                  <p class="font-label text-[9px] uppercase text-on-surface-variant">Capa</p>
+                  <p class="font-bold text-on-surface">{{ activeLayer() === 'thermal' ? 'Noche demanda' : 'Tráfico' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="space-y-8">
+          <section class="space-y-4">
+            <h2 class="section-title">Acciones rápidas</h2>
+            <div class="grid grid-cols-2 gap-3">
+              @for (action of quickActions; track action.label) {
+                <button
+                  class="flex min-h-28 flex-col items-center justify-center gap-2 rounded-xl border border-outline-variant/20 bg-surface-container-high p-4 text-center transition-colors hover:border-primary/50"
+                  type="button"
+                  (click)="handleQuickAction(action.action, vm.kpis)"
+                >
+                  <span class="material-symbols-outlined text-primary">{{ action.icon }}</span>
+                  <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{{ action.label }}</span>
+                </button>
+              }
+            </div>
+          </section>
+
+          <section class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="section-title">Registro de actividad</h2>
+              <button class="font-label text-[10px] font-bold uppercase tracking-widest text-primary" type="button" (click)="toggleActivity()">
+                {{ showAllActivity() ? 'Ver menos' : 'Ver todo' }}
+              </button>
+            </div>
+            <div class="overflow-hidden rounded-xl border border-outline-variant/10 bg-surface-container-low">
+              @for (item of visibleActivity(vm.activity); track item.id) {
+                <article class="flex gap-4 border-b border-outline-variant/10 p-4 last:border-b-0 hover:bg-surface-container-high">
+                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg" [ngClass]="{
+                    'bg-error/10 text-error': activityTone(item.type) === 'error',
+                    'bg-primary/10 text-primary': activityTone(item.type) === 'primary',
+                    'bg-tertiary/10 text-tertiary': activityTone(item.type) === 'tertiary'
+                  }">
+                    <span class="material-symbols-outlined text-lg">{{ activityIcon(item.type) }}</span>
+                  </div>
+                  <div class="space-y-1">
+                    <p class="text-xs font-bold uppercase text-on-surface">{{ item.title }}</p>
+                    <p class="text-[11px] leading-relaxed text-on-surface-variant">{{ item.description }}</p>
+                    <p class="font-mono text-[9px] text-on-surface-variant/60">{{ item.time }}</p>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </section>
+}

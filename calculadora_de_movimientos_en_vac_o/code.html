@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Deadhead Movement Calculator | KINETIC PRECISION</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#004f69",
+                    "on-surface-variant": "#a3aac4",
+                    "on-surface": "#dee5ff",
+                    "on-tertiary-container": "#00465d",
+                    "primary-fixed": "#00f4fe",
+                    "surface-dim": "#060e20",
+                    "surface-bright": "#1f2b49",
+                    "on-primary-fixed-variant": "#006266",
+                    "outline-variant": "#40485d",
+                    "on-primary-fixed": "#004346",
+                    "surface-container": "#0f1930",
+                    "on-error-container": "#ffa8a3",
+                    "on-tertiary-fixed": "#003041",
+                    "surface-container-lowest": "#000000",
+                    "background": "#060e20",
+                    "error-dim": "#d7383b",
+                    "surface": "#060e20",
+                    "on-secondary": "#475266",
+                    "secondary-container": "#3c475a",
+                    "tertiary-container": "#7bd1fa",
+                    "secondary-fixed": "#d8e3fb",
+                    "tertiary": "#9bddff",
+                    "primary": "#a1faff",
+                    "surface-container-highest": "#192540",
+                    "on-primary-container": "#00575b",
+                    "primary-container": "#00f4fe",
+                    "surface-tint": "#a1faff",
+                    "primary-fixed-dim": "#00e5ee",
+                    "on-background": "#dee5ff",
+                    "error": "#ff716c",
+                    "secondary-fixed-dim": "#cad5ed",
+                    "tertiary-dim": "#6cc3eb",
+                    "primary-dim": "#00e5ee",
+                    "outline": "#6d758c",
+                    "on-error": "#490006",
+                    "error-container": "#9f0519",
+                    "on-secondary-fixed": "#354053",
+                    "tertiary-fixed-dim": "#6cc3eb",
+                    "secondary": "#d8e3fb",
+                    "inverse-primary": "#006a6e",
+                    "inverse-surface": "#faf8ff",
+                    "surface-container-low": "#091328",
+                    "inverse-on-surface": "#4d556b",
+                    "on-secondary-fixed-variant": "#515c70",
+                    "on-primary": "#006165",
+                    "on-secondary-container": "#c5d1e8",
+                    "secondary-dim": "#cad5ed",
+                    "surface-container-high": "#141f38",
+                    "surface-variant": "#192540",
+                    "on-tertiary-fixed-variant": "#004f69",
+                    "tertiary-fixed": "#7bd1fa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background-color: rgba(20, 31, 56, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .gradient-btn {
+            background: linear-gradient(135deg, #a1faff 0%, #00f4fe 100%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<nav class="fixed top-0 z-50 flex justify-between items-center px-6 py-3 w-full bg-[#060e20] dark:bg-[#060e20] border-b border-[#40485d]/15 font-['Space_Grotesk'] text-sm tracking-tight">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#a1faff] uppercase">KINETIC PRECISION</span>
+<div class="hidden md:flex gap-6">
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">Fleet</a>
+<a class="text-[#a1faff] font-bold border-b-2 border-[#00f4fe] px-3 py-1" href="#">Operations</a>
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">Network</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="bg-surface-container-highest px-3 py-1.5 rounded-lg flex items-center gap-2 border border-outline-variant/15">
+<span class="material-symbols-outlined text-primary-fixed-dim text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-xs w-48 text-on-surface placeholder-on-surface-variant" placeholder="Global search..." type="text"/>
+</div>
+<button class="material-symbols-outlined p-2 text-[#a1faff] hover:bg-[#141f38] rounded-full transition-colors">notifications</button>
+<button class="material-symbols-outlined p-2 text-[#a1faff] hover:bg-[#141f38] rounded-full transition-colors">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30">
+<img alt="Fleet Manager Profile" data-alt="professional profile avatar for a logistics fleet manager with a clean tech-focused background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF35JOGqGYcLE1lyKDODN2bdNaBRp_t61khcHLHfImTATUfM3tbJP2n9PSIz0X4TEDPGz-c1exAnh4vm1kB-TrAyGuOY53TXnvD73vumwMtq0c5FpDyHN-N_RxjXfTzs-5wJlgZZAsSJSsc9X-XuzFbER9Ey8n1-uILrREpynD_JkbIE9VaJUqNARviAKYvv8yc7Aoh3evIfIlycEhyrVhdpv3iyl_Dk8-1r3LCzTxGr8rF5A9KksC4LHcO3X5zXYdFUP7ewbUZ5iH"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col pt-16 bg-[#091328] dark:bg-[#091328] h-screen w-64 border-r border-[#40485d]/15 shadow-[24px_0_48px_-12px_rgba(0,244,254,0.04)] z-40">
+<div class="px-6 py-6 border-b border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<div>
+<h2 class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-[#00f4fe]">OPERATIONS</h2>
+<p class="text-[10px] text-on-surface-variant font-medium tracking-tight">V-01 PRECISION</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-4 overflow-y-auto">
+<a class="text-[#d8e3fb] opacity-60 px-4 py-3 flex items-center gap-3 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span> Dashboard
+            </a>
+<a class="text-[#a1faff] bg-[#141f38] border-r-4 border-[#00f4fe] px-4 py-3 flex items-center gap-3 transition-all duration-300 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-lg">calculate</span> Deadhead Calc
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-4 py-3 flex items-center gap-3 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-lg">route</span> Route Planner
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-4 py-3 flex items-center gap-3 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span> Analytics
+            </a>
+</nav>
+<div class="px-4 py-6 flex flex-col gap-2 border-t border-outline-variant/10">
+<button class="gradient-btn text-on-primary font-bold text-xs py-3 rounded-xl uppercase tracking-widest shadow-lg shadow-primary/10 active:scale-95 transition-all">
+                NEW ROUTE
+            </button>
+<div class="mt-4">
+<a class="text-[#d8e3fb] opacity-60 px-4 py-2 flex items-center gap-3 hover:text-[#a1faff] text-[10px] uppercase font-bold tracking-widest" href="#">
+<span class="material-symbols-outlined text-base">help</span> Support
+                </a>
+<a class="text-[#d8e3fb] opacity-60 px-4 py-2 flex items-center gap-3 hover:text-[#a1faff] text-[10px] uppercase font-bold tracking-widest" href="#">
+<span class="material-symbols-outlined text-base">terminal</span> Logs
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-20 p-8 min-h-screen">
+<!-- Header Section -->
+<header class="mb-10 flex justify-between items-end">
+<div class="max-w-2xl">
+<h1 class="font-headline text-4xl font-bold tracking-tight text-on-surface mb-2">Deadhead Movement Calculator</h1>
+<p class="text-on-surface-variant font-body">Optimize non-revenue vehicle shifts using real-time spatial intelligence and fuel-burn predictive models.</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface-container-high border border-outline-variant/30 text-on-surface px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-lg">file_download</span> EXPORT REPORT
+                </button>
+<button class="gradient-btn text-on-primary px-8 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-lg">bolt</span> CALCULATE
+                </button>
+</div>
+</header>
+<!-- Dashboard Layout: Bento Grid -->
+<div class="grid grid-cols-12 gap-6 items-start">
+<!-- Left Column: Form Inputs -->
+<section class="col-span-12 lg:col-span-4 space-y-6">
+<div class="glass-panel p-6 rounded-xl border border-outline-variant/15">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">tune</span>
+<h3 class="font-headline text-lg font-medium">Movement Parameters</h3>
+</div>
+<div class="space-y-5">
+<div class="space-y-2">
+<label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Origin Depot</label>
+<div class="bg-surface-container-highest border-b border-outline-variant p-1 rounded-t-lg">
+<select class="w-full bg-transparent border-none focus:ring-0 text-sm text-on-surface py-2">
+<option>METRO CENTRAL (HUB-01)</option>
+<option>SOUTH GATE (SUB-04)</option>
+<option>DOWNTOWN ANNEX (HUB-03)</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Destination Depot</label>
+<div class="bg-surface-container-highest border-b border-outline-variant p-1 rounded-t-lg">
+<select class="w-full bg-transparent border-none focus:ring-0 text-sm text-on-surface py-2">
+<option>WESTSIDE TERMINAL (HUB-02)</option>
+<option>NORTH PLAZA (SUB-09)</option>
+<option>RIVERSIDE DEPOT (HUB-05)</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Window Start</label>
+<input class="w-full bg-surface-container-highest border-none border-b border-outline-variant focus:ring-0 text-sm text-on-surface rounded-t-lg py-2" type="time" value="23:00"/>
+</div>
+<div class="space-y-2">
+<label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Window End</label>
+<input class="w-full bg-surface-container-highest border-none border-b border-outline-variant focus:ring-0 text-sm text-on-surface rounded-t-lg py-2" type="time" value="04:30"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Fleet Configuration</label>
+<div class="flex flex-wrap gap-2">
+<label class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/30 cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="rounded border-outline-variant bg-surface-container text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-xs font-medium">Electric Bus</span>
+</label>
+<label class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/30 cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="rounded border-outline-variant bg-surface-container text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-xs font-medium">Diesel Articulated</span>
+</label>
+<label class="flex items-center gap-2 bg-surface-container-low px-3 py-2 rounded-lg border border-outline-variant/30 cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="rounded border-outline-variant bg-surface-container text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-xs font-medium">Hydrogen Cell</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15">
+<div class="flex justify-between items-center mb-4">
+<span class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Efficiency Index</span>
+<span class="text-primary font-headline font-bold">94.2%</span>
+</div>
+<div class="h-2 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[94.2%]"></div>
+</div>
+<p class="mt-4 text-[11px] text-on-surface-variant leading-relaxed">Current calculation is leveraging <span class="text-on-surface font-medium">Zone 4 Off-Peak Pricing</span> for optimized energy consumption.</p>
+</div>
+</section>
+<!-- Right Column: Visualizations and Table -->
+<section class="col-span-12 lg:col-span-8 space-y-6">
+<!-- KPI Tiles -->
+<div class="grid grid-cols-3 gap-6">
+<div class="bg-surface-container p-5 rounded-xl border border-outline-variant/15 flex flex-col justify-between">
+<span class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Est. Fuel Savings</span>
+<div class="flex items-baseline gap-2 mt-4">
+<span class="text-3xl font-headline font-bold text-primary">$4,280</span>
+<span class="text-[10px] text-primary/70">/ MONTH</span>
+</div>
+</div>
+<div class="bg-surface-container p-5 rounded-xl border border-outline-variant/15 flex flex-col justify-between">
+<span class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">CO2 Reduction</span>
+<div class="flex items-baseline gap-2 mt-4">
+<span class="text-3xl font-headline font-bold text-tertiary">1.2t</span>
+<span class="text-[10px] text-tertiary/70">CO2eq</span>
+</div>
+</div>
+<div class="bg-surface-container-highest p-5 rounded-xl border border-primary/20 flex flex-col justify-between shadow-lg shadow-primary/5">
+<span class="text-[10px] font-bold tracking-widest text-primary uppercase">Optimized Routes</span>
+<div class="flex items-baseline gap-2 mt-4">
+<span class="text-3xl font-headline font-bold text-on-surface">18</span>
+<span class="text-[10px] text-on-surface-variant">ACTIVE</span>
+</div>
+</div>
+</div>
+<!-- Chart: Efficiency Trends -->
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 relative overflow-hidden">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="font-headline text-lg font-medium">Deadhead Efficiency Trend</h3>
+<p class="text-[11px] text-on-surface-variant">Non-revenue miles vs Energy cost (Last 30 Days)</p>
+</div>
+<div class="flex gap-2">
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-[10px] font-bold text-on-surface-variant">EFFICIENCY</span>
+</div>
+<div class="flex items-center gap-1.5 ml-4">
+<div class="w-2 h-2 rounded-full bg-outline"></div>
+<span class="text-[10px] font-bold text-on-surface-variant">BASELINE</span>
+</div>
+</div>
+</div>
+<!-- Mock Chart Visualization -->
+<div class="h-48 flex items-end gap-1 px-2 relative">
+<div class="absolute inset-0 border-b border-outline-variant/20 flex flex-col justify-between py-1 pointer-events-none">
+<div class="w-full border-t border-outline-variant/5"></div>
+<div class="w-full border-t border-outline-variant/5"></div>
+<div class="w-full border-t border-outline-variant/5"></div>
+</div>
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[45%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/30 h-[70%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/60 h-[85%] rounded-t-sm hover:bg-primary/80 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[50%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/40 h-[65%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/90 h-[95%] rounded-t-sm hover:bg-primary transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/30 h-[45%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[55%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+<div class="flex-1 bg-primary/20 h-[40%] rounded-t-sm hover:bg-primary/40 transition-colors"></div>
+</div>
+</div>
+<!-- Data Table -->
+<div class="bg-surface-container rounded-xl border border-outline-variant/15 overflow-hidden">
+<div class="p-4 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="font-headline text-sm font-bold tracking-tight">CALCULATED ROUTE VARIANTS</h3>
+<span class="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">8 MATCHES FOUND</span>
+</div>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="p-4 font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Route ID</th>
+<th class="p-4 font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Distance</th>
+<th class="p-4 font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Duration</th>
+<th class="p-4 font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Est. Cost</th>
+<th class="p-4 font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Savings</th>
+<th class="p-4 font-label text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="p-4 font-mono text-xs">DH-00452-A</td>
+<td class="p-4">12.4 km</td>
+<td class="p-4">24m</td>
+<td class="p-4">$18.40</td>
+<td class="p-4 text-primary font-bold">+$4.20</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#a1faff]"></div>
+<span class="text-[10px] font-bold uppercase">Optimal</span>
+</div>
+</td>
+</tr>
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-high transition-colors">
+<td class="p-4 font-mono text-xs">DH-00452-B</td>
+<td class="p-4">14.1 km</td>
+<td class="p-4">31m</td>
+<td class="p-4">$22.10</td>
+<td class="p-4 text-on-surface-variant">+$0.50</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary shadow-[0_0_8px_#9bddff]"></div>
+<span class="text-[10px] font-bold uppercase">Sub-Optimal</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors">
+<td class="p-4 font-mono text-xs">DH-00452-C</td>
+<td class="p-4">18.2 km</td>
+<td class="p-4">42m</td>
+<td class="p-4">$31.50</td>
+<td class="p-4 text-error">- $8.90</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-error shadow-[0_0_8px_#ff716c]"></div>
+<span class="text-[10px] font-bold uppercase">Excessive</span>
+</div>
+</td>
+</tr>
+<tr class="bg-surface-container-low/30 hover:bg-surface-container-high transition-colors">
+<td class="p-4 font-mono text-xs">DH-00452-D</td>
+<td class="p-4">13.0 km</td>
+<td class="p-4">26m</td>
+<td class="p-4">$19.80</td>
+<td class="p-4 text-primary font-bold">+$2.80</td>
+<td class="p-4">
+<div class="flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#a1faff]"></div>
+<span class="text-[10px] font-bold uppercase">Optimal</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Secondary Analysis Section (Asymmetric) -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 relative h-80 rounded-xl overflow-hidden border border-outline-variant/15">
+<img alt="Heatmap visual" class="w-full h-full object-cover grayscale brightness-50 contrast-125" data-alt="abstract satellite view of city streets at night with neon blue and teal glowing data overlays and heatmaps" data-location="Chicago" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXjiioBWKDS6Mo2lhtGpnC09C-omhYj53u4lB6G_sCF90uuITXAJJCA_aA_yxmYI-0MhE6qpQPG8Ith5S1P7Mq6rY-EjyTSqrtSY43LxhggLqpbVH_VNqXtpuFylSmB7VTIhslOcHSiEHIQsykgki4w9poSlB0JXPiocBHol6lWiYn3xyboMi3E2MF_P9MbEJGoGqRJ8T-cm7oMsR3rot-M5QSW5okNR1ssa4uRkHssVWbkVpK537v1InlalQmLykt6sptoVoYJx5t"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-80"></div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div>
+<span class="text-[10px] font-bold text-primary tracking-widest uppercase">Live Network Congestion</span>
+<h4 class="font-headline text-xl font-bold">Spatial Efficiency Overlay</h4>
+</div>
+<button class="bg-surface-container-highest/80 backdrop-blur-md border border-outline-variant/30 text-primary p-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border border-outline-variant/15 flex flex-col justify-center">
+<div class="mb-6">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-2">auto_awesome</span>
+<h4 class="font-headline text-xl font-bold">AI Suggestion</h4>
+</div>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                    Based on your "Window End" parameter, shifting the departure by <span class="text-primary font-bold">12 minutes</span> would reduce fuel consumption by an additional <span class="text-primary font-bold">4.2%</span> due to reduced idling at METRO HUB.
+                </p>
+<button class="mt-6 text-primary border border-primary/30 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-primary/10 transition-colors">
+                    APPLY OPTIMIZATION
+                </button>
+</div>
+</div>
+</main>
+<!-- Contextual Status Bar -->
+<footer class="fixed bottom-0 left-64 right-0 bg-surface-container-lowest border-t border-outline-variant/15 px-6 py-2 flex justify-between items-center z-40 text-[10px] font-medium tracking-tighter text-on-surface-variant">
+<div class="flex gap-4">
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> DATABASE: CONNECTED</span>
+<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> LATENCY: 24ms</span>
+</div>
+<div class="flex gap-4">
+<span class="uppercase">ASSINT Systems v2.4.0-PRC</span>
+<span class="uppercase text-on-surface">© 2024 KINETIC PRECISION LOGISTICS</span>
+</div>
+</footer>
+<script src="../static-interactions.js"></script>
+</body></html>

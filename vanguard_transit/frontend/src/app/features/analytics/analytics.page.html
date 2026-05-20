@@ -1,0 +1,135 @@
+@if (viewModel$ | async; as vm) {
+  <section class="space-y-8 p-5 md:p-8">
+    <div class="mx-auto max-w-[1600px] space-y-8">
+      <header class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 class="font-headline text-3xl font-bold uppercase tracking-tight text-on-surface">
+            Inteligencia <span class="text-primary">operacional</span>
+          </h1>
+          <p class="mt-2 max-w-xl text-sm leading-relaxed text-on-surface-variant">
+            Análisis profundo de métricas de eficiencia y rendimiento del gasto en toda la infraestructura.
+          </p>
+          <p class="mt-2 font-label text-[10px] uppercase tracking-widest text-primary">Filtro aplicado: {{ filterSummary() }}</p>
+        </div>
+
+        <form class="flex flex-col gap-3 rounded-xl border border-outline-variant/20 bg-surface-container-low p-3 sm:flex-row" [formGroup]="filters" (ngSubmit)="applyFilter()">
+          <mat-form-field appearance="fill" class="min-w-48">
+            <mat-label>Rango</mat-label>
+            <mat-select formControlName="range">
+              <mat-option value="Últimos 30 días">Últimos 30 días</mat-option>
+              <mat-option value="T3 EF2024">T3 EF2024</mat-option>
+              <mat-option value="Últimos 12 meses">Últimos 12 meses</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="min-w-56">
+            <mat-label>Línea</mat-label>
+            <mat-select formControlName="line">
+              <mat-option value="Todas las líneas">Todas las líneas</mat-option>
+              <mat-option value="Tránsito rápido A">Tránsito rápido A</mat-option>
+              <mat-option value="Núcleo urbano B">Núcleo urbano B</mat-option>
+              <mat-option value="Conexión suburbana">Conexión suburbana</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button class="btn-primary self-start sm:self-center" type="submit">Aplicar filtro</button>
+        </form>
+      </header>
+
+      <div class="grid grid-cols-12 gap-6">
+        <aside class="col-span-12 space-y-6 xl:col-span-3">
+          <app-metric-card label="Fiabilidad promedio" [value]="vm.metrics.avgReliability.value" [meta]="vm.metrics.avgReliability.trend ?? ''" tone="primary"></app-metric-card>
+          <app-metric-card label="Densidad operacional" [value]="vm.metrics.opDensity.value" [unit]="vm.metrics.opDensity.unit ?? 'Unidad / km2'" [meta]="vm.metrics.opDensity.status ?? 'Rendimiento estable'" icon="horizontal_rule" tone="tertiary"></app-metric-card>
+          <app-metric-card label="Variación de combustible" [value]="vm.metrics.fuelVariance.value" [meta]="vm.metrics.fuelVariance.status ?? 'Umbral crítico'" icon="warning" tone="error"></app-metric-card>
+        </aside>
+
+        <article class="card col-span-12 xl:col-span-9">
+          <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 class="section-title">Eficiencia operacional</h2>
+              <p class="font-label text-xs text-on-surface-variant">Datos temporales: índice de eficiencia vs latencia</p>
+            </div>
+            <div class="flex gap-4 font-label text-[10px] font-bold uppercase text-on-surface-variant">
+              <span class="flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-primary"></span>Eficiencia</span>
+              <span class="flex items-center gap-2"><span class="h-3 w-3 rounded-full bg-tertiary"></span>Objetivo</span>
+            </div>
+          </div>
+
+          <div class="relative h-64">
+            <svg class="h-full w-full" viewBox="0 0 800 220" role="img" aria-label="Gráfico de eficiencia operacional">
+              <defs>
+                <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#1A3A6B" stop-opacity="0.24" />
+                  <stop offset="100%" stop-color="#1A3A6B" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              @for (line of [20, 60, 100, 140, 180]; track line) {
+                <line stroke="#7B8DA8" stroke-opacity="0.35" x1="0" x2="800" [attr.y1]="line" [attr.y2]="line"></line>
+              }
+              <path [attr.d]="chartAreaPath()" fill="url(#chartGradient)"></path>
+              <path [attr.d]="chartLinePath()" fill="none" stroke="#1A3A6B" stroke-width="3"></path>
+              <line stroke="#F5A800" stroke-dasharray="8,4" stroke-width="1.5" x1="0" x2="800" y1="92" y2="92"></line>
+              @for (point of [{x: 200, y: 162}, {x: 400, y: 102}, {x: 600, y: 80}]; track point.x) {
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" fill="#1A3A6B" r="4"></circle>
+              }
+            </svg>
+            <div class="mt-2 flex justify-between">
+              @for (week of ['WK 12', 'WK 13', 'WK 14', 'WK 15', 'WK 16']; track week) {
+                <span class="font-label text-[9px] uppercase text-on-surface-variant">{{ week }}</span>
+              }
+            </div>
+          </div>
+        </article>
+
+        <article class="card col-span-12 xl:col-span-5">
+          <h2 class="section-title mb-6">Comparativa de líneas</h2>
+          <div class="space-y-6">
+            @for (line of lineComparison(); track line.name) {
+              <div class="space-y-2" [ngClass]="line.selected ? '' : 'opacity-45'">
+                <div class="flex items-center justify-between font-label text-[10px] font-bold uppercase tracking-widest">
+                  <span class="text-on-surface">{{ line.name }}</span>
+                  <span class="text-primary">{{ line.value }}</span>
+                </div>
+                <div class="h-2 overflow-hidden rounded-full bg-surface-container-highest">
+                  <div class="h-full bg-primary transition-all" [style.width]="line.width"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="card col-span-12 overflow-hidden xl:col-span-7">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="section-title">Costos operacionales</h2>
+            <button class="btn-ghost text-primary" type="button" (click)="exportCsv(vm.costs)">
+              <span class="material-symbols-outlined text-sm">download</span>
+              Exportar CSV
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[640px] text-left">
+              <thead>
+                <tr class="border-b border-outline-variant/10">
+                  @for (heading of ['Categoría', 'Mes actual', 'Variación', 'Estado']; track heading; let last = $last) {
+                    <th class="pb-4 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant" [ngClass]="last ? 'text-right' : ''">{{ heading }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/5">
+                @for (cost of vm.costs; track cost.category) {
+                  <tr class="hover:bg-surface-container-high">
+                    <td class="py-4 text-xs font-medium text-on-surface">{{ cost.category }}</td>
+                    <td class="py-4 text-xs text-on-surface">{{ cost.currentMonth }}</td>
+                    <td class="py-4 text-xs font-bold" [ngClass]="varianceClass(cost.variance)">{{ cost.variance }}</td>
+                    <td class="py-4 text-right"><app-status-badge [label]="cost.status" [tone]="statusTone(cost.status)"></app-status-badge></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+}

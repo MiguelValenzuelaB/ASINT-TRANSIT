@@ -1,0 +1,16 @@
+{
+  "name": "app-piloto-transporte",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix vanguard_transit/frontend\"",
+    "backend:dev": "npm run dev --prefix backend",
+    "frontend:vanguard:dev": "npm run dev --prefix vanguard_transit/frontend",
+    "build": "npm run build --prefix vanguard_transit/frontend",
+    "test": "npm run test --prefix vanguard_transit/frontend",
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix vanguard_transit/frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

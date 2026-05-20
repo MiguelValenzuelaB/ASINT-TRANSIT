@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Precision | Route &amp; Schedule Planner</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#004f69",
+                        "on-surface-variant": "#a3aac4",
+                        "on-surface": "#dee5ff",
+                        "on-tertiary-container": "#00465d",
+                        "primary-fixed": "#00f4fe",
+                        "surface-dim": "#060e20",
+                        "surface-bright": "#1f2b49",
+                        "on-primary-fixed-variant": "#006266",
+                        "outline-variant": "#40485d",
+                        "on-primary-fixed": "#004346",
+                        "surface-container": "#0f1930",
+                        "on-error-container": "#ffa8a3",
+                        "on-tertiary-fixed": "#003041",
+                        "surface-container-lowest": "#000000",
+                        "background": "#060e20",
+                        "error-dim": "#d7383b",
+                        "surface": "#060e20",
+                        "on-secondary": "#475266",
+                        "secondary-container": "#3c475a",
+                        "tertiary-container": "#7bd1fa",
+                        "secondary-fixed": "#d8e3fb",
+                        "tertiary": "#9bddff",
+                        "primary": "#a1faff",
+                        "surface-container-highest": "#192540",
+                        "on-primary-container": "#00575b",
+                        "primary-container": "#00f4fe",
+                        "surface-tint": "#a1faff",
+                        "primary-fixed-dim": "#00e5ee",
+                        "on-background": "#dee5ff",
+                        "error": "#ff716c",
+                        "secondary-fixed-dim": "#cad5ed",
+                        "tertiary-dim": "#6cc3eb",
+                        "primary-dim": "#00e5ee",
+                        "outline": "#6d758c",
+                        "on-error": "#490006",
+                        "error-container": "#9f0519",
+                        "on-secondary-fixed": "#354053",
+                        "tertiary-fixed-dim": "#6cc3eb",
+                        "secondary": "#d8e3fb",
+                        "inverse-primary": "#006a6e",
+                        "inverse-surface": "#faf8ff",
+                        "surface-container-low": "#091328",
+                        "inverse-on-surface": "#4d556b",
+                        "on-secondary-fixed-variant": "#515c70",
+                        "on-primary": "#006165",
+                        "on-secondary-container": "#c5d1e8",
+                        "secondary-dim": "#cad5ed",
+                        "surface-container-high": "#141f38",
+                        "surface-variant": "#192540",
+                        "on-tertiary-fixed-variant": "#004f69",
+                        "tertiary-fixed": "#7bd1fa"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Space Grotesk', sans-serif; }
+        .glass-panel {
+            background: rgba(25, 37, 64, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(64, 72, 93, 0.15);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #40485d; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen overflow-x-hidden">
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#060e20] dark:bg-[#060e20] text-[#a1faff] font-['Space_Grotesk'] text-sm tracking-tight w-full border-b border-[#40485d]/15 flex justify-between items-center px-6 py-3">
+<div class="text-xl font-bold tracking-tighter text-[#a1faff] uppercase">KINETIC PRECISION</div>
+<div class="flex items-center gap-6">
+<div class="hidden md:flex gap-8">
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">DASHBOARD</a>
+<a class="text-[#a1faff] font-bold border-b-2 border-[#00f4fe] px-3 py-1" href="#">ROUTE PLANNER</a>
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">ANALYTICS</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">settings</button>
+<img alt="Fleet Manager Profile" class="w-8 h-8 rounded-full border border-primary/20" data-alt="Professional fleet manager headshot with neutral lighting and blurred corporate office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf91J5fpYabndRDTKbUM5tSgYDXVIs2VVoXSV646_Iaa4r6aTWRcSCI1-Teg-SQ75O_YQL8jletDg-oc1UXcQOoj6HOt2TZxwVSgQJKWVFRgWNsSCbRJSAOd2q0ZJAqK4b7M1mpftqPdy35QTz9AIaKvGjVJLQZpoApogzEzEosJhfpu-aBA4XMppSe2Oef7vP8mND6thJ3knln_X3qUrEvNBa9vpEK_Txy1t8u97RviURwCovACGQmkRJjvA8nmp2qTFFyC0X1enP"/>
+</div>
+</div>
+</header>
+<aside class="fixed left-0 top-0 h-full flex flex-col pt-16 bg-[#091328] dark:bg-[#091328] h-screen w-64 border-r border-[#40485d]/15 shadow-[24px_0_48px_-12px_rgba(0,244,254,0.04)] z-40">
+<div class="px-6 py-8">
+<div class="text-[#00f4fe] font-['Inter'] text-xs font-medium uppercase tracking-widest">OPERATIONS</div>
+<div class="text-on-surface-variant text-[10px] tracking-widest mt-1">V-01 PRECISION</div>
+</div>
+<nav class="flex-1">
+<div class="space-y-1">
+<a class="text-[#d8e3fb] opacity-60 px-6 py-3 flex items-center gap-3 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="text-[#d8e3fb] opacity-60 px-6 py-3 flex items-center gap-3 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">calculate</span>
+<span>Deadhead Calc</span>
+</a>
+<a class="text-[#a1faff] bg-[#141f38] border-r-4 border-[#00f4fe] px-6 py-3 flex items-center gap-3 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">route</span>
+<span>Route Planner</span>
+</a>
+<a class="text-[#d8e3fb] opacity-60 px-6 py-3 flex items-center gap-3 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span>
+<span>Analytics</span>
+</a>
+</div>
+</nav>
+<div class="p-6">
+<button class="w-full py-3 bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold rounded-xl flex items-center justify-center gap-2 text-xs tracking-widest uppercase hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+                NEW ROUTE
+            </button>
+</div>
+<div class="mt-auto border-t border-outline-variant/15 p-4 space-y-2">
+<a class="text-[#d8e3fb] opacity-60 px-2 py-2 flex items-center gap-3 text-xs hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help</span> Support
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-2 py-2 flex items-center gap-3 text-xs hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">terminal</span> Logs
+            </a>
+</div>
+</aside>
+<main class="ml-64 pt-16 min-h-screen">
+<div class="p-8 max-w-[1600px] mx-auto space-y-8">
+<section class="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-outline-variant/15 pb-8">
+<div>
+<h1 class="font-headline text-4xl font-bold tracking-tight text-on-surface">Route &amp; Schedule <span class="text-primary">Planner</span></h1>
+<p class="text-on-surface-variant font-body text-sm mt-2 max-w-md">Precision management of live bus lines, driver duty cycles, and real-time fleet synchronization.</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<div class="bg-surface-container-high p-1 rounded-full flex gap-1">
+<button class="px-4 py-1.5 rounded-full bg-primary text-on-primary text-xs font-bold">DAILY</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant text-xs hover:text-on-surface transition-colors">WEEKLY</button>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-4 py-2 rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm text-tertiary">calendar_today</span>
+<span class="text-xs font-medium">MONDAY, OCT 24</span>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-12 gap-8">
+<div class="col-span-12 lg:col-span-3 space-y-6">
+<div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/10 shadow-lg">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline text-sm font-bold tracking-widest uppercase">Global Filters</h3>
+<span class="material-symbols-outlined text-primary text-sm">tune</span>
+</div>
+<div class="space-y-6">
+<div>
+<label class="text-[10px] text-on-surface-variant font-bold tracking-widest uppercase mb-3 block">Day of Week</label>
+<div class="grid grid-cols-7 gap-1">
+<button class="w-8 h-8 rounded border border-outline-variant/20 text-[10px] flex items-center justify-center hover:border-primary transition-colors">M</button>
+<button class="w-8 h-8 rounded bg-primary text-on-primary text-[10px] flex items-center justify-center">T</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 text-[10px] flex items-center justify-center hover:border-primary transition-colors">W</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 text-[10px] flex items-center justify-center hover:border-primary transition-colors">T</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 text-[10px] flex items-center justify-center hover:border-primary transition-colors">F</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 text-[10px] flex items-center justify-center hover:border-primary transition-colors text-tertiary">S</button>
+<button class="w-8 h-8 rounded border border-outline-variant/20 text-[10px] flex items-center justify-center hover:border-primary transition-colors text-tertiary">S</button>
+</div>
+</div>
+<div>
+<label class="text-[10px] text-on-surface-variant font-bold tracking-widest uppercase mb-3 block">Vehicle Capacity</label>
+<input class="w-full h-1 bg-surface-container-highest accent-primary appearance-none rounded-full cursor-pointer" type="range"/>
+<div class="flex justify-between mt-2 text-[10px] text-on-surface-variant font-medium">
+<span>32 SEATS</span>
+<span>84 SEATS</span>
+</div>
+</div>
+<div>
+<label class="text-[10px] text-on-surface-variant font-bold tracking-widest uppercase mb-3 block">Driver Availability</label>
+<div class="space-y-2">
+<div class="flex items-center gap-3 p-2 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#a1faff]"></div>
+<span class="text-xs flex-1">Active Duty</span>
+<span class="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded">14</span>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-xs flex-1">Standby</span>
+<span class="text-[10px] bg-tertiary/10 text-tertiary px-1.5 py-0.5 rounded">04</span>
+</div>
+<div class="flex items-center gap-3 p-2 bg-surface-container-lowest rounded-lg border border-outline-variant/10">
+<div class="w-2 h-2 rounded-full bg-error shadow-[0_0_8px_#ff716c]"></div>
+<span class="text-xs flex-1">Off Duty</span>
+<span class="text-[10px] bg-error/10 text-error px-1.5 py-0.5 rounded">08</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant/10 overflow-hidden relative group">
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-60 z-10"></div>
+<img alt="Fleet Map View" class="w-full h-40 object-cover rounded-lg group-hover:scale-105 transition-transform duration-700" data-alt="Technical dashboard map with glowing bus route lines and real-time vehicle icons over a dark city grid" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfCCGXfNfzCIltYZj-l7KPtNnH-9cpz5TBDaFpcpyw0CxwI-F6tXyRo7B0UH14gRrMtd7NDS9m6K49HYPSKMpfPCaL6Lhp9KkUrTYat-9_WIum_G_ZxnHeFW5ajHlOBwOFECGqIndmJOOCH1XUY1TYUZaFUwxrtiuxalpI60r68AxCvKOajsn_fqOuDY9J5pQ4Ebp5A3nLaG4kNUAHRY6NE_QbNiazcouSc80IeGev6B0a3WI9G0Tc9hHUki0kruhQXH9kuTxjBomq"/>
+<div class="absolute bottom-4 left-4 z-20">
+<span class="text-[10px] text-primary font-bold tracking-widest uppercase">Live View</span>
+<h4 class="font-headline text-sm font-bold">District 09 Center</h4>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-9 space-y-8">
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant/15 overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center bg-surface-container-high/30">
+<h3 class="font-headline text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">view_timeline</span>
+                                Timeline Synchronization
+                            </h3>
+<div class="flex items-center gap-4 text-[10px] font-bold tracking-widest uppercase">
+<div class="flex items-center gap-2"><div class="w-2 h-2 bg-primary"></div> On Time</div>
+<div class="flex items-center gap-2"><div class="w-2 h-2 bg-tertiary"></div> Delay &lt; 5m</div>
+<div class="flex items-center gap-2"><div class="w-2 h-2 bg-error"></div> Critical</div>
+</div>
+</div>
+<div class="overflow-x-auto p-4">
+<div class="min-w-[1000px]">
+<div class="flex border-b border-outline-variant/20 mb-4 pb-2">
+<div class="w-48 flex-shrink-0 text-[10px] text-on-surface-variant font-bold tracking-widest">BUS LINE</div>
+<div class="flex-1 grid grid-cols-12 text-[10px] text-on-surface-variant font-bold text-center">
+<span>06:00</span><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span><span>22:00</span><span>00:00</span><span>02:00</span><span>04:00</span>
+</div>
+</div>
+<div class="space-y-6">
+<div class="flex items-center">
+<div class="w-48 flex-shrink-0">
+<div class="text-xs font-bold text-primary">LINE 402-A</div>
+<div class="text-[9px] text-on-surface-variant">North Transit Hub</div>
+</div>
+<div class="flex-1 h-8 bg-surface-container-lowest rounded-full relative overflow-hidden group">
+<div class="absolute left-[10%] w-[35%] h-full bg-primary/20 border-x border-primary/50 flex items-center px-4">
+<span class="text-[9px] font-bold text-primary">MORNING SHIFT - OP-45</span>
+</div>
+<div class="absolute left-[50%] w-[40%] h-full bg-primary/10 border-x border-primary/30"></div>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-48 flex-shrink-0">
+<div class="text-xs font-bold text-secondary">LINE 110-C</div>
+<div class="text-[9px] text-on-surface-variant">Downtown Express</div>
+</div>
+<div class="flex-1 h-8 bg-surface-container-lowest rounded-full relative overflow-hidden">
+<div class="absolute left-[15%] w-[30%] h-full bg-tertiary/20 border-x border-tertiary/50 flex items-center px-4">
+<span class="text-[9px] font-bold text-tertiary">PEAK HOURS - OP-12</span>
+</div>
+<div class="absolute left-[45%] w-[5%] h-1.5 bg-error top-1/2 -translate-y-1/2 rounded-full ml-1"></div>
+<div class="absolute left-[55%] w-[35%] h-full bg-tertiary/10 border-x border-tertiary/30"></div>
+</div>
+</div>
+<div class="flex items-center">
+<div class="w-48 flex-shrink-0">
+<div class="text-xs font-bold text-secondary">LINE 99-Z</div>
+<div class="text-[9px] text-on-surface-variant">Industrial Loop</div>
+</div>
+<div class="flex-1 h-8 bg-surface-container-lowest rounded-full relative overflow-hidden">
+<div class="absolute left-[5%] w-[25%] h-full bg-primary/20 border-x border-primary/50 flex items-center px-4">
+<span class="text-[9px] font-bold text-primary">NIGHT CYCLE - OP-88</span>
+</div>
+<div class="absolute left-[70%] w-[25%] h-full bg-primary/10 border-x border-primary/30"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-surface-container-low rounded-2xl border border-outline-variant/15 p-6 space-y-4">
+<h3 class="font-headline text-sm font-bold tracking-widest uppercase mb-6 flex justify-between">
+                                Active Route Status
+                                <span class="text-primary-container text-xs">84% OPERATIONAL</span>
+</h3>
+<div class="space-y-3">
+<div class="bg-surface-container p-4 rounded-xl border-l-4 border-primary flex justify-between items-center">
+<div>
+<div class="text-xs font-bold">ROUTE 45-B</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Central – East Station</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<div class="text-[10px] text-on-surface-variant uppercase">E.T.A.</div>
+<div class="text-xs font-bold text-primary">04:12m</div>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-xl border-l-4 border-tertiary flex justify-between items-center">
+<div>
+<div class="text-xs font-bold">ROUTE 22-A</div>
+<div class="text-[10px] text-on-surface-variant uppercase">University Loop</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<div class="text-[10px] text-on-surface-variant uppercase">DELAY</div>
+<div class="text-xs font-bold text-tertiary">+02:30m</div>
+</div>
+<span class="material-symbols-outlined text-tertiary">warning</span>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-xl border-l-4 border-primary flex justify-between items-center">
+<div>
+<div class="text-xs font-bold">ROUTE 10-X</div>
+<div class="text-[10px] text-on-surface-variant uppercase">Harbor Express</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<div class="text-[10px] text-on-surface-variant uppercase">E.T.A.</div>
+<div class="text-xs font-bold text-primary">09:45m</div>
+</div>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-8 flex flex-col justify-center items-center text-center space-y-4 border-dashed border-2 border-primary/20">
+<div class="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary-container mb-2">
+<span class="material-symbols-outlined text-4xl">add_road</span>
+</div>
+<h3 class="font-headline text-xl font-bold">Optimize New Route</h3>
+<p class="text-on-surface-variant text-sm px-4">Generate AI-optimized route patterns based on historical passenger density and current vehicle health metrics.</p>
+<button class="px-8 py-3 bg-surface-container-highest text-primary border border-primary/30 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all">
+                                START CONFIGURATION
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center p-6 hidden group-target:flex" id="new-route-modal">
+<div class="bg-surface-container-high w-full max-w-2xl rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden">
+<div class="p-6 border-b border-outline-variant/10 flex justify-between items-center">
+<h2 class="font-headline text-xl font-bold text-primary uppercase tracking-tighter">New Fleet Deployment</h2>
+<a class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors" href="#">close</a>
+</div>
+<div class="p-8 grid grid-cols-2 gap-8">
+<div class="space-y-6">
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Route Identifier</label>
+<input class="w-full bg-surface-container-highest border-b border-outline-variant focus:border-primary outline-none py-2 text-sm placeholder:opacity-30" placeholder="e.g. LINE-802" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Service Level</label>
+<select class="w-full bg-surface-container-highest border-b border-outline-variant focus:border-primary outline-none py-2 text-sm appearance-none">
+<option>Standard Commuter</option>
+<option>Express Peak</option>
+<option>Night Shift Regular</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">Operating Fleet</label>
+<div class="flex flex-wrap gap-2 pt-2">
+<div class="px-3 py-1 bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold rounded">V-400 SERIES</div>
+<div class="px-3 py-1 bg-surface-container text-on-surface-variant text-[10px] font-bold rounded">V-600 SERIES</div>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<div class="p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/10 space-y-4">
+<h4 class="text-[10px] font-bold text-primary uppercase tracking-widest">Projection Summary</h4>
+<div class="flex justify-between">
+<span class="text-[10px] text-on-surface-variant">Est. Capacity</span>
+<span class="text-xs font-bold text-on-surface">1,240 PAX/HR</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[10px] text-on-surface-variant">Efficiency Score</span>
+<span class="text-xs font-bold text-primary">94.2%</span>
+</div>
+<div class="flex justify-between">
+<span class="text-[10px] text-on-surface-variant">Driver Cycles</span>
+<span class="text-xs font-bold text-tertiary">3 UNITS</span>
+</div>
+</div>
+<button class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold text-sm tracking-widest uppercase rounded-xl">
+                        CONFIRM DEPLOYMENT
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<script src="../static-interactions.js"></script>
+</body></html>

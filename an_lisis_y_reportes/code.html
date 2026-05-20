@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kinetic Precision - Reports &amp; Analytics</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Inter:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#004f69",
+            "on-surface-variant": "#a3aac4",
+            "on-surface": "#dee5ff",
+            "on-tertiary-container": "#00465d",
+            "primary-fixed": "#00f4fe",
+            "surface-dim": "#060e20",
+            "surface-bright": "#1f2b49",
+            "on-primary-fixed-variant": "#006266",
+            "outline-variant": "#40485d",
+            "on-primary-fixed": "#004346",
+            "surface-container": "#0f1930",
+            "on-error-container": "#ffa8a3",
+            "on-tertiary-fixed": "#003041",
+            "surface-container-lowest": "#000000",
+            "background": "#060e20",
+            "error-dim": "#d7383b",
+            "surface": "#060e20",
+            "on-secondary": "#475266",
+            "secondary-container": "#3c475a",
+            "tertiary-container": "#7bd1fa",
+            "secondary-fixed": "#d8e3fb",
+            "tertiary": "#9bddff",
+            "primary": "#a1faff",
+            "surface-container-highest": "#192540",
+            "on-primary-container": "#00575b",
+            "primary-container": "#00f4fe",
+            "surface-tint": "#a1faff",
+            "primary-fixed-dim": "#00e5ee",
+            "on-background": "#dee5ff",
+            "error": "#ff716c",
+            "secondary-fixed-dim": "#cad5ed",
+            "tertiary-dim": "#6cc3eb",
+            "primary-dim": "#00e5ee",
+            "outline": "#6d758c",
+            "on-error": "#490006",
+            "error-container": "#9f0519",
+            "on-secondary-fixed": "#354053",
+            "tertiary-fixed-dim": "#6cc3eb",
+            "secondary": "#d8e3fb",
+            "inverse-primary": "#006a6e",
+            "inverse-surface": "#faf8ff",
+            "surface-container-low": "#091328",
+            "inverse-on-surface": "#4d556b",
+            "on-secondary-fixed-variant": "#515c70",
+            "on-primary": "#006165",
+            "on-secondary-container": "#c5d1e8",
+            "secondary-dim": "#cad5ed",
+            "surface-container-high": "#141f38",
+            "surface-variant": "#192540",
+            "on-tertiary-fixed-variant": "#004f69",
+            "tertiary-fixed": "#7bd1fa"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "fontFamily": {
+            "headline": ["Space Grotesk"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-panel {
+      background: rgba(25, 37, 64, 0.6);
+      backdrop-filter: blur(20px);
+    }
+    .ghost-border {
+      outline: 1px solid rgba(64, 72, 93, 0.15);
+    }
+    .sidebar-active-gradient {
+      background: linear-gradient(90deg, rgba(20, 31, 56, 1) 0%, rgba(20, 31, 56, 0) 100%);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="fixed top-0 z-50 flex justify-between items-center px-6 py-3 w-full bg-[#060e20] dark:bg-[#060e20] border-b border-[#40485d]/15">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#a1faff] uppercase font-headline">KINETIC PRECISION</span>
+<nav class="hidden md:flex gap-6 font-headline text-sm tracking-tight items-center">
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">Fleet</a>
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">Scheduling</a>
+<a class="text-[#a1faff] font-bold border-b-2 border-[#00f4fe] px-3 py-1" href="#">Analytics</a>
+<a class="text-[#d8e3fb] opacity-70 hover:bg-[#141f38] transition-colors duration-200 px-3 py-1 rounded" href="#">Network</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center bg-surface-container-high rounded-full px-4 py-1.5 ghost-border">
+<span class="material-symbols-outlined text-primary text-sm">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-xs w-48 text-on-surface placeholder:text-on-surface-variant/50 ml-2" placeholder="Global system search..." type="text"/>
+</div>
+<button class="p-2 text-[#a1faff] hover:bg-[#141f38] transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-[#a1faff] hover:bg-[#141f38] transition-colors duration-200 rounded-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/30 ml-2">
+<img alt="Fleet Manager Profile" data-alt="professional portrait of a man in his 40s with a sharp, modern haircut and focused expression in a dimly lit tech office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKwxtGHfE-tPzbewlPYmB6HvXWZKh-QUrcjh_iLFvf01Bsd8gJCoqp0j9LxfRheLcUfAOGfib_-2Bsr5pgDQInqxUm7hIDsp3kMSTKAH2GFX1sd5OqPKi9IX9fp2VyHCgXR94AcuBAzAgozmT8CdWfYvORY5x0KDU9_rWzTi2z--H6CZEE6VBQKU6SzQP2huFpccZ18sJcshqJY4P6JCyRd7-kFC6X7Zt2ep_8PevEyzQNu0LRKos-r32iuEsHWhH4eTEJHyY9EmlF"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 bg-[#091328] dark:bg-[#091328] border-r border-[#40485d]/15 shadow-[24px_0_48px_-12px_rgba(0,244,254,0.04)] pt-16 flex flex-col z-40 hidden md:flex transition-all duration-300 ease-in-out">
+<div class="px-6 py-8">
+<p class="text-[#00f4fe] font-headline text-xs font-medium uppercase tracking-widest mb-1">OPERATIONS</p>
+<p class="text-[#d8e3fb] opacity-40 font-label text-[10px] uppercase tracking-tighter">V-01 PRECISION</p>
+</div>
+<nav class="flex-1 px-2 space-y-1">
+<a class="text-[#d8e3fb] opacity-60 px-4 py-3 flex items-center gap-3 font-label text-xs font-medium uppercase tracking-widest hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+        Dashboard
+      </a>
+<a class="text-[#d8e3fb] opacity-60 px-4 py-3 flex items-center gap-3 font-label text-xs font-medium uppercase tracking-widest hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="calculate">calculate</span>
+        Deadhead Calc
+      </a>
+<a class="text-[#d8e3fb] opacity-60 px-4 py-3 flex items-center gap-3 font-label text-xs font-medium uppercase tracking-widest hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="route">route</span>
+        Route Planner
+      </a>
+<a class="text-[#a1faff] bg-[#141f38] border-r-4 border-[#00f4fe] px-4 py-3 flex items-center gap-3 font-label text-xs font-medium uppercase tracking-widest transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="analytics">analytics</span>
+        Analytics
+      </a>
+</nav>
+<div class="p-6">
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-on-primary font-headline font-bold text-xs py-3 rounded-xl hover:opacity-90 transition-opacity active:scale-95 duration-150 shadow-[0_0_20px_rgba(0,244,254,0.2)]">
+        NEW ROUTE
+      </button>
+</div>
+<footer class="mt-auto px-2 pb-6 space-y-1">
+<a class="text-[#d8e3fb] opacity-60 px-4 py-2 flex items-center gap-3 font-label text-[10px] uppercase tracking-widest hover:text-[#a1faff]" href="#">
+<span class="material-symbols-outlined text-base" data-icon="help">help</span>
+        Support
+      </a>
+<a class="text-[#d8e3fb] opacity-60 px-4 py-2 flex items-center gap-3 font-label text-[10px] uppercase tracking-widest hover:text-[#a1faff]" href="#">
+<span class="material-symbols-outlined text-base" data-icon="terminal">terminal</span>
+        Logs
+      </a>
+</footer>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-64 pt-20 px-6 pb-12 min-h-screen">
+<!-- Header & Filter Bar -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-8">
+<div>
+<h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface mb-2 uppercase">Operational <span class="text-primary">Intelligence</span></h1>
+<p class="text-on-surface-variant font-body text-sm max-w-xl">Deep-dive analysis of system-wide efficiency metrics and expenditure performance across the kinetic infrastructure.</p>
+</div>
+<div class="flex flex-wrap items-center gap-4 bg-surface-container-low p-2 rounded-xl ghost-border">
+<div class="flex items-center gap-2 px-3 py-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="calendar_today">calendar_today</span>
+<select class="bg-transparent border-none text-xs text-on-surface font-label uppercase tracking-widest focus:ring-0">
+<option>Last 30 Days</option>
+<option>Q3 FY2024</option>
+<option>Last 12 Months</option>
+</select>
+</div>
+<div class="h-6 w-px bg-outline-variant/30"></div>
+<div class="flex items-center gap-2 px-3 py-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="filter_list">filter_list</span>
+<select class="bg-transparent border-none text-xs text-on-surface font-label uppercase tracking-widest focus:ring-0">
+<option>All Transit Lines</option>
+<option>Rapid Transit A</option>
+<option>Urban Core B</option>
+<option>Suburb Connect</option>
+</select>
+</div>
+<button class="bg-surface-container-highest text-primary-fixed text-[10px] font-bold px-4 py-2 rounded uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all">
+          Apply Filter
+        </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Key Metric Cards -->
+<div class="col-span-12 lg:col-span-3 space-y-6">
+<div class="bg-surface-container-low p-6 rounded-xl ghost-border relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+<p class="text-[10px] font-label text-on-surface-variant uppercase tracking-widest mb-1">Avg. Reliability</p>
+<p class="font-headline text-4xl font-bold text-primary">98.4%</p>
+<div class="mt-4 flex items-center gap-2 text-primary-container">
+<span class="material-symbols-outlined text-sm" data-icon="trending_up">trending_up</span>
+<span class="text-[10px] font-bold uppercase">+2.1% from prev.</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl ghost-border relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-24 h-24 bg-tertiary/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+<p class="text-[10px] font-label text-on-surface-variant uppercase tracking-widest mb-1">Op. Density</p>
+<p class="font-headline text-4xl font-bold text-tertiary">42.8</p>
+<p class="text-[10px] text-on-surface-variant font-label">UNIT / KM-SQ</p>
+<div class="mt-4 flex items-center gap-2 text-on-surface-variant/60">
+<span class="material-symbols-outlined text-sm" data-icon="horizontal_rule">horizontal_rule</span>
+<span class="text-[10px] font-bold uppercase">Stable Performance</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl ghost-border relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-24 h-24 bg-error/5 rounded-full -mr-8 -mt-8 transition-transform group-hover:scale-110"></div>
+<p class="text-[10px] font-label text-on-surface-variant uppercase tracking-widest mb-1">Fuel Variance</p>
+<p class="font-headline text-4xl font-bold text-error">+12.4%</p>
+<div class="mt-4 flex items-center gap-2 text-error">
+<span class="material-symbols-outlined text-sm" data-icon="warning">warning</span>
+<span class="text-[10px] font-bold uppercase">Critical Threshold</span>
+</div>
+</div>
+</div>
+<!-- Large Line Chart: Efficiency Over Time -->
+<div class="col-span-12 lg:col-span-9 bg-surface-container-low p-8 rounded-xl ghost-border">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="font-headline text-lg font-bold text-on-surface uppercase tracking-tight">Operational Efficiency</h3>
+<p class="text-xs text-on-surface-variant font-label">TIME-SERIES DATA: EFFICIENCY INDEX VS LATENCY</p>
+</div>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold uppercase text-on-surface-variant">Efficiency</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="text-[10px] font-bold uppercase text-on-surface-variant">Target</span>
+</div>
+</div>
+</div>
+<div class="h-64 relative">
+<!-- Mock Chart Graphic (SVG) -->
+<svg class="w-full h-full" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#00f4fe" stop-opacity="0.2"></stop>
+<stop offset="100%" stop-color="#00f4fe" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<line stroke="#40485d" stroke-opacity="0.1" x1="0" x2="800" y1="0" y2="0"></line>
+<line stroke="#40485d" stroke-opacity="0.1" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="#40485d" stroke-opacity="0.1" x1="0" x2="800" y1="100" y2="100"></line>
+<line stroke="#40485d" stroke-opacity="0.1" x1="0" x2="800" y1="150" y2="150"></line>
+<line stroke="#40485d" stroke-opacity="0.1" x1="0" x2="800" y1="200" y2="200"></line>
+<!-- Area & Line -->
+<path d="M0,150 Q100,140 200,160 T400,100 T600,80 T800,120 L800,200 L0,200 Z" fill="url(#chartGradient)"></path>
+<path d="M0,150 Q100,140 200,160 T400,100 T600,80 T800,120" fill="none" stroke="#00f4fe" stroke-width="3"></path>
+<!-- Target Line -->
+<line stroke="#9bddff" stroke-dasharray="8,4" stroke-width="1" x1="0" x2="800" y1="90" y2="90"></line>
+<!-- Points -->
+<circle cx="200" cy="160" fill="#00f4fe" r="4"></circle>
+<circle cx="400" cy="100" fill="#00f4fe" r="4"></circle>
+<circle cx="600" cy="80" fill="#00f4fe" r="4"></circle>
+</svg>
+<div class="flex justify-between mt-4">
+<span class="text-[9px] font-label text-on-surface-variant uppercase">WK 12</span>
+<span class="text-[9px] font-label text-on-surface-variant uppercase">WK 13</span>
+<span class="text-[9px] font-label text-on-surface-variant uppercase">WK 14</span>
+<span class="text-[9px] font-label text-on-surface-variant uppercase">WK 15</span>
+<span class="text-[9px] font-label text-on-surface-variant uppercase">WK 16</span>
+</div>
+</div>
+</div>
+<!-- Bar Chart: Transit Line Comparison -->
+<div class="col-span-12 lg:col-span-5 bg-surface-container-low p-8 rounded-xl ghost-border">
+<h3 class="font-headline text-lg font-bold text-on-surface uppercase tracking-tight mb-6">Line Comparison</h3>
+<div class="space-y-6">
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+<span class="text-on-surface">RAPID TRANSIT A</span>
+<span class="text-primary">1,240 KM/DAY</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+<span class="text-on-surface">URBAN CORE B</span>
+<span class="text-primary">980 KM/DAY</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+<span class="text-on-surface">SUBURB CONNECT</span>
+<span class="text-primary">1,510 KM/DAY</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[95%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+<span class="text-on-surface">EXPRESS CIRCLE</span>
+<span class="text-primary">420 KM/DAY</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[35%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest">
+<span class="text-on-surface">NIGHT FLOW</span>
+<span class="text-primary">210 KM/DAY</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[15%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Cost Summary Table -->
+<div class="col-span-12 lg:col-span-7 bg-surface-container-low p-8 rounded-xl ghost-border overflow-hidden">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline text-lg font-bold text-on-surface uppercase tracking-tight">Operational Costs</h3>
+<button class="flex items-center gap-2 text-primary font-label text-[10px] font-bold uppercase hover:underline">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+            Export CSV
+          </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-outline-variant/10">
+<th class="pb-4 font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Category</th>
+<th class="pb-4 font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Current Month</th>
+<th class="pb-4 font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Variance</th>
+<th class="pb-4 font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-4 text-xs font-medium text-on-surface">Fuel &amp; Energy</td>
+<td class="py-4 text-xs text-on-surface">$142,850.00</td>
+<td class="py-4 text-xs text-error font-bold">+12.4%</td>
+<td class="py-4 text-right">
+<span class="px-2 py-1 bg-error-container text-on-error-container text-[9px] font-black rounded uppercase">Critical</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-4 text-xs font-medium text-on-surface">Vehicle Maintenance</td>
+<td class="py-4 text-xs text-on-surface">$58,200.00</td>
+<td class="py-4 text-xs text-primary-fixed-dim font-bold">-2.1%</td>
+<td class="py-4 text-right">
+<span class="px-2 py-1 bg-primary/10 text-primary text-[9px] font-black rounded uppercase">Optimized</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-4 text-xs font-medium text-on-surface">Personnel Logistics</td>
+<td class="py-4 text-xs text-on-surface">$215,000.00</td>
+<td class="py-4 text-xs text-on-surface-variant font-bold">+0.5%</td>
+<td class="py-4 text-right">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[9px] font-black rounded uppercase">Stable</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-4 text-xs font-medium text-on-surface">Infrastructure Fees</td>
+<td class="py-4 text-xs text-on-surface">$12,400.00</td>
+<td class="py-4 text-xs text-on-surface-variant font-bold">0.0%</td>
+<td class="py-4 text-right">
+<span class="px-2 py-1 bg-surface-container-highest text-on-surface-variant text-[9px] font-black rounded uppercase">Fixed</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-4 text-xs font-medium text-on-surface">Emergency Repairs</td>
+<td class="py-4 text-xs text-on-surface">$8,900.00</td>
+<td class="py-4 text-xs text-tertiary font-bold">+4.2%</td>
+<td class="py-4 text-right">
+<span class="px-2 py-1 bg-tertiary-container/20 text-tertiary text-[9px] font-black rounded uppercase">Caution</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Asymmetric Insights Section -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="md:col-span-2 glass-panel p-8 rounded-xl ghost-border flex items-center gap-8">
+<div class="w-1/3 aspect-square rounded-lg overflow-hidden border border-primary/20">
+<img alt="Heatmap preview" data-alt="abstract heatmap visualization with vibrant cyan and deep purple gradients showing high intensity focal points" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT5Eeh1udLuM6jlyUELMmNXsQr88AArJYCwNrrNFT97X72xeGUVpw26BdKUJHIedjaI-IH3trej0OYACLI6KqOXUNZTmHBGERguWJXqFm2EUN5Tyb_EmdzpGJu3cILyAp6XknzklQUSuctiRdgNCPhSImBSqhZGuOpkkNSqQBFmyb7tFD9SE5PiuTtS3wAbE89p4CNwXPChXXiM4JsYuTdnJJS3URJXb-w571WuGonHRU__w1jOwQ8HRvhCsR4GA-Oopsag6zWFBoS"/>
+</div>
+<div>
+<h4 class="font-headline text-xl font-bold text-primary uppercase mb-2">Predictive Congestion Heatmap</h4>
+<p class="text-sm text-on-surface-variant mb-6">AI-driven projection suggests 18% increase in delay risks for the East-Sector during the upcoming festival week. Recommended adjustment: Increase fleet density by 2.4 units.</p>
+<div class="flex gap-4">
+<button class="bg-primary/10 border border-primary text-primary px-6 py-2 rounded-lg font-label text-[10px] font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-all">Download Map View</button>
+<button class="text-on-surface-variant px-6 py-2 rounded-lg font-label text-[10px] font-bold uppercase tracking-widest hover:text-on-surface transition-all">Dismiss Insight</button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container p-8 rounded-xl ghost-border flex flex-col justify-center items-center text-center">
+<div class="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h4 class="font-headline text-lg font-bold text-on-surface uppercase mb-2">System Health</h4>
+<div class="text-4xl font-headline font-bold text-primary mb-1">OPTIMAL</div>
+<p class="text-[10px] font-label text-on-surface-variant uppercase tracking-widest">V-01 Core Synced</p>
+</div>
+</div>
+</main>
+<!-- FAB (Contextually suppressed on sub-pages but active here for 'Analytics Report Generation') -->
+<button class="fixed bottom-8 right-8 w-16 h-16 rounded-full bg-gradient-to-tr from-primary to-primary-container text-on-primary flex items-center justify-center shadow-[0_8px_32px_rgba(0,244,254,0.3)] hover:scale-105 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-3xl" data-icon="add_chart">add_chart</span>
+</button>
+<script src="../static-interactions.js"></script>
+</body></html>

@@ -1,0 +1,227 @@
+<section class="space-y-8 p-5 md:p-8">
+  <div class="mx-auto max-w-[1600px] space-y-8">
+    <header class="flex flex-col gap-6 border-b border-outline-variant/15 pb-8 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface md:text-4xl">
+          Planificador de Rutas y <span class="text-primary">Horarios</span>
+        </h1>
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-on-surface-variant">
+          Gestión de líneas en operación, ciclos de conductores y sincronización de flota en tiempo real.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <div class="flex gap-1 rounded-lg bg-surface-container-high p-1">
+          <button
+            class="rounded-lg px-4 py-1.5 font-headline text-xs font-bold uppercase tracking-widest"
+            [ngClass]="period() === 'daily' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'"
+            type="button"
+            (click)="setPeriod('daily')"
+          >
+            Diario
+          </button>
+          <button
+            class="rounded-lg px-4 py-1.5 font-headline text-xs font-bold uppercase tracking-widest"
+            [ngClass]="period() === 'weekly' ? 'bg-primary text-white' : 'text-on-surface-variant hover:text-on-surface'"
+            type="button"
+            (click)="setPeriod('weekly')"
+          >
+            Semanal
+          </button>
+        </div>
+        <div class="flex items-center gap-2 rounded-lg border border-outline-variant/20 bg-surface-container px-4 py-2">
+          <span class="material-symbols-outlined text-sm text-tertiary">calendar_today</span>
+          <span class="font-label text-xs font-medium uppercase">{{ selectedDateLabel() }}</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-12 gap-8">
+      <aside class="col-span-12 space-y-6 xl:col-span-3">
+        <section class="card">
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="font-headline text-sm font-bold uppercase tracking-widest text-on-surface">Filtros globales</h2>
+            <span class="material-symbols-outlined text-sm text-primary">tune</span>
+          </div>
+
+          <div class="space-y-6">
+            <div>
+              <label class="mb-3 block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Día de la semana</label>
+              <div class="grid grid-cols-7 gap-1">
+                @for (day of weekDays; track day; let i = $index) {
+                  <button
+                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-outline-variant/20 font-label text-[10px] transition-colors hover:border-primary"
+                    [ngClass]="i === selectedDayIndex() ? 'bg-primary text-white border-primary' : i >= 5 ? 'text-tertiary' : 'text-on-surface-variant'"
+                    type="button"
+                    (click)="selectDay(i)"
+                  >
+                    {{ day }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-3 block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Capacidad del vehículo</label>
+              <input class="h-1 w-full cursor-pointer appearance-none rounded-full bg-surface-container-highest accent-primary" min="32" max="84" type="range" [value]="capacity()" (input)="updateCapacity($any($event.target).value)">
+              <div class="mt-2 flex justify-between font-label text-[10px] font-medium text-on-surface-variant">
+                <span>32 asientos</span>
+                <span class="text-primary">{{ capacity() }} activos</span>
+                <span>84 asientos</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="mb-3 block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Disponibilidad de conductores</label>
+              <div class="space-y-2">
+                @for (driver of driverAvailability(); track driver.label) {
+                  <div class="flex items-center gap-3 rounded-lg border border-outline-variant/10 bg-surface-container-lowest p-2">
+                    <span class="h-2 w-2 rounded-full" [ngClass]="driver.color"></span>
+                    <span class="flex-1 text-xs text-on-surface">{{ driver.label }}</span>
+                    <app-status-badge [label]="driver.count" [tone]="$any(driver.tone)"></app-status-badge>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="relative h-48 overflow-hidden rounded-xl border border-outline-variant/15 bg-surface-container-low p-5">
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(245,168,0,0.24),transparent_28%),linear-gradient(135deg,rgba(26,58,107,0.72),rgba(13,17,23,0.9))]"></div>
+          <div class="relative z-10">
+            <span class="font-label text-[10px] font-bold uppercase tracking-widest text-primary">Vista en directo</span>
+            <h2 class="mt-1 font-headline text-lg font-bold text-on-surface">Distrito 09</h2>
+            <p class="mt-2 text-xs text-on-surface-variant">Densidad ajustada por {{ capacity() }} asientos.</p>
+          </div>
+        </section>
+      </aside>
+
+      <section class="col-span-12 space-y-8 xl:col-span-9">
+        <article class="card overflow-hidden p-0">
+          <div class="flex flex-col gap-4 border-b border-outline-variant/10 bg-surface-container-high/30 p-6 lg:flex-row lg:items-center lg:justify-between">
+            <h2 class="flex items-center gap-2 font-headline text-lg font-bold text-on-surface">
+              <span class="material-symbols-outlined text-primary">view_timeline</span>
+              Sincronización de horarios
+            </h2>
+            <div class="flex flex-wrap gap-4 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+              <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-sm bg-primary"></span>A tiempo</span>
+              <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-sm bg-tertiary"></span>Retraso &lt; 5m</span>
+              <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-sm bg-error"></span>Crítico</span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto p-4">
+            <div class="min-w-[1000px]">
+              <div class="mb-4 flex border-b border-outline-variant/20 pb-2">
+                <div class="w-48 shrink-0 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Línea</div>
+                <div class="grid flex-1 grid-cols-12 text-center font-label text-[10px] font-bold text-on-surface-variant">
+                  @for (hour of timelineHours; track hour) {
+                    <span>{{ hour }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="space-y-6">
+                @for (slot of timelineSlots(); track slot.id) {
+                  <div class="flex items-center">
+                    <div class="w-48 shrink-0">
+                      <div class="font-headline text-xs font-bold text-primary">{{ slot.id }}</div>
+                      <div class="text-[9px] text-on-surface-variant">{{ slot.name }}</div>
+                    </div>
+                    <div class="relative h-9 flex-1 overflow-hidden rounded-lg bg-surface-container-lowest">
+                      <div
+                        class="absolute top-0 flex h-full items-center border-x px-4"
+                        [ngClass]="slot.color === 'primary' ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-tertiary/20 border-tertiary/50 text-tertiary'"
+                        [style.left]="slot.left"
+                        [style.width]="slot.width"
+                      >
+                        <span class="font-label text-[9px] font-bold">{{ slot.label }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <section class="card space-y-4">
+            <h2 class="flex items-center justify-between font-headline text-sm font-bold uppercase tracking-widest text-on-surface">
+              Estado de rutas activas
+              <app-status-badge [label]="operationalPercent() + '% operacional'" tone="primary"></app-status-badge>
+            </h2>
+
+            <div class="space-y-3">
+              @for (line of lines(); track line.id) {
+                <article class="flex items-center justify-between rounded-xl border-l-2 bg-surface-container p-4" [ngClass]="line.status === 'delayed' ? 'border-l-tertiary' : 'border-l-primary'">
+                  <div>
+                    <div class="font-headline text-xs font-bold text-on-surface">{{ line.id }}</div>
+                    <div class="font-label text-[10px] uppercase text-on-surface-variant">{{ line.name }}</div>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <div class="text-right">
+                      <div class="font-label text-[10px] uppercase text-on-surface-variant">{{ line.status === 'delayed' ? 'Retraso' : 'T.L.L.' }}</div>
+                      <div class="text-xs font-bold" [ngClass]="line.status === 'delayed' ? 'text-tertiary' : 'text-primary'">{{ line.delay ?? line.eta }}</div>
+                    </div>
+                    <span class="material-symbols-outlined" [ngClass]="line.status === 'delayed' ? 'text-tertiary' : 'text-primary'">{{ lineIcon(line.status) }}</span>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+
+          <section class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-primary/20 bg-surface-container-high/70 p-8 text-center">
+            <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <span class="material-symbols-outlined text-4xl">add_road</span>
+            </div>
+            <h2 class="font-headline text-xl font-bold text-on-surface">Optimizar nueva ruta</h2>
+            <p class="mt-2 text-sm leading-relaxed text-on-surface-variant">
+              Genera patrones optimizados basados en densidad histórica de pasajeros y salud vehicular actual.
+            </p>
+            <button class="btn-primary mt-6" type="button" (click)="openCreatePanel()">Iniciar configuración</button>
+          </section>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+@if (createPanelOpen()) {
+  <section class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+    <form class="w-full max-w-xl rounded-xl border border-outline-variant/20 bg-surface-container-high p-6 shadow-xl" [formGroup]="routeForm" (ngSubmit)="createRoute()">
+      <div class="mb-6 flex items-center justify-between">
+        <h2 class="font-headline text-xl font-bold uppercase tracking-tight text-on-surface">Nueva ruta operacional</h2>
+        <button class="btn-ghost px-2" type="button" aria-label="Cerrar" (click)="closeCreatePanel()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="grid gap-4">
+        <label class="space-y-2">
+          <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">ID Ruta</span>
+          <input class="input-base" formControlName="id">
+        </label>
+        <label class="space-y-2">
+          <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Nombre operacional</span>
+          <input class="input-base" formControlName="name">
+        </label>
+        <label class="space-y-2">
+          <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Tiempo estimado</span>
+          <input class="input-base" formControlName="eta">
+        </label>
+        <label class="space-y-2">
+          <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Estado inicial</span>
+          <select class="input-base" formControlName="status">
+            <option value="on-time">A tiempo</option>
+            <option value="delayed">Con retraso</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-3">
+        <button class="btn-secondary" type="button" (click)="closeCreatePanel()">Cancelar</button>
+        <button class="btn-primary" type="submit">Agregar ruta</button>
+      </div>
+    </form>
+  </section>
+}

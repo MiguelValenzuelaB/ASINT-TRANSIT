@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output
+dist/
+**/dist/
+.angular/
+**/.angular/
+
+# Backend runtime sandbox (corridas Python por usuario)
+backend/runs/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local env / secrets
+.env
+.env.local
+.env.*.local
+
+# Python (por si el repo crece a incluir scripts)
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/

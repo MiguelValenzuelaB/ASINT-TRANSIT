@@ -1,0 +1,191 @@
+<div class="app-surface font-body" [ngClass]="{ 'text-[0.95rem]': compactMode(), 'motion-reduce': reduceMotion() }">
+  <header class="fixed left-0 right-0 top-0 z-50 flex h-16 items-center justify-between border-b border-outline-variant/20 bg-surface-container-low px-4 md:px-6">
+    <div class="flex min-w-0 items-center gap-3 md:gap-8">
+      <button class="btn-ghost px-2 md:hidden" type="button" aria-label="Abrir navegación" (click)="toggleMobileMenu()">
+        <span class="material-symbols-outlined text-xl">menu</span>
+      </button>
+
+      <a routerLink="/planning/optimization" class="flex min-w-0 items-center gap-2">
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+          <span class="material-symbols-outlined text-lg">directions_bus</span>
+        </span>
+        <span class="truncate font-headline text-lg font-bold uppercase tracking-tight text-on-surface">
+          ASINT <span class="text-primary">Transit</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-1 md:flex">
+        @for (item of primaryNavItems; track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="bg-primary text-white"
+            class="rounded-lg px-4 py-1.5 font-headline text-xs font-semibold uppercase tracking-widest text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+          >
+            {{ item.shortLabel }}
+          </a>
+        }
+      </nav>
+    </div>
+
+    <div class="relative flex items-center gap-2 md:gap-3">
+      <div class="relative hidden items-center rounded-lg border border-outline-variant/30 bg-surface-container px-3 py-1.5 lg:flex">
+        <span class="material-symbols-outlined text-sm text-on-surface-variant">search</span>
+        <input
+          class="ml-2 w-52 bg-transparent text-xs text-on-surface outline-none placeholder:text-on-surface-variant/50"
+          placeholder="Búsqueda del sistema..."
+          type="text"
+          [value]="searchQuery()"
+          (input)="updateSearch($any($event.target).value)"
+          (keydown.enter)="goToFirstSearchResult()"
+        >
+
+        @if (searchResults().length > 0) {
+          <div class="absolute right-0 top-11 z-50 w-72 overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container-high shadow-xl">
+            @for (result of searchResults(); track result.path) {
+              <button class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-surface-container-highest" type="button" (click)="navigateTo(result.path)">
+                <span class="material-symbols-outlined text-primary">{{ result.icon }}</span>
+                <span>
+                  <span class="block text-xs font-bold text-on-surface">{{ result.label }}</span>
+                  <span class="block text-[10px] uppercase tracking-widest text-on-surface-variant">{{ result.path }}</span>
+                </span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <span class="hidden items-center gap-2 rounded-lg border border-outline-variant/30 bg-surface-container px-3 py-1.5 font-label text-[10px] font-bold uppercase tracking-wider text-on-surface-variant lg:flex">
+        <span class="h-1.5 w-1.5 animate-pulse rounded-full bg-tertiary"></span>
+        Nominal
+      </span>
+
+      <button class="btn-ghost relative px-2" type="button" aria-label="Notificaciones" (click)="toggleNotifications()">
+        <span class="material-symbols-outlined text-xl">notifications</span>
+        <span class="absolute right-1 top-1 h-2 w-2 rounded-full bg-error"></span>
+      </button>
+      <button class="btn-ghost px-2" type="button" aria-label="Configuración" (click)="toggleSettings()">
+        <span class="material-symbols-outlined text-xl">settings</span>
+      </button>
+
+      @if (notificationsOpen()) {
+        <section class="absolute right-12 top-12 z-50 w-80 rounded-xl border border-outline-variant/20 bg-surface-container-high p-4 shadow-xl">
+          <h2 class="mb-3 font-headline text-sm font-bold uppercase tracking-widest text-on-surface">Notificaciones</h2>
+          <div class="space-y-3">
+            @for (item of notifications; track item.title) {
+              <article class="rounded-lg bg-surface-container p-3">
+                <div class="mb-1 flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full" [ngClass]="{
+                    'bg-error': item.tone === 'error',
+                    'bg-primary': item.tone === 'primary',
+                    'bg-tertiary': item.tone === 'tertiary'
+                  }"></span>
+                  <p class="text-xs font-bold text-on-surface">{{ item.title }}</p>
+                </div>
+                <p class="text-[11px] leading-relaxed text-on-surface-variant">{{ item.detail }}</p>
+              </article>
+            }
+          </div>
+        </section>
+      }
+
+      @if (settingsOpen()) {
+        <section class="absolute right-0 top-12 z-50 w-80 rounded-xl border border-outline-variant/20 bg-surface-container-high p-4 shadow-xl">
+          <h2 class="mb-3 font-headline text-sm font-bold uppercase tracking-widest text-on-surface">Ajustes de vista</h2>
+          <label class="flex items-center justify-between rounded-lg bg-surface-container p-3 text-xs text-on-surface">
+            Modo compacto
+            <input class="accent-primary" type="checkbox" [checked]="compactMode()" (change)="compactMode.set($any($event.target).checked)">
+          </label>
+          <label class="mt-2 flex items-center justify-between rounded-lg bg-surface-container p-3 text-xs text-on-surface">
+            Reducir animaciones
+            <input class="accent-primary" type="checkbox" [checked]="reduceMotion()" (change)="reduceMotion.set($any($event.target).checked)">
+          </label>
+        </section>
+      }
+    </div>
+  </header>
+
+  <aside
+    class="fixed bottom-0 left-0 top-16 z-40 w-64 border-r border-outline-variant/20 bg-surface-container-low transition-transform duration-200 md:translate-x-0"
+    [ngClass]="mobileMenuOpen() ? 'translate-x-0' : '-translate-x-full'"
+  >
+    <div class="border-b border-outline-variant/20 px-6 py-6">
+      <div class="mb-1 flex items-center gap-2">
+        <span class="h-2 w-2 animate-pulse rounded-full bg-primary"></span>
+        <p class="font-headline text-xs font-semibold uppercase tracking-widest text-primary">Operaciones</p>
+      </div>
+      <p class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant/70">V-01 Precision</p>
+    </div>
+
+    <nav class="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+      @for (group of navGroups; track group.title) {
+        <div>
+          <p class="px-4 pb-2 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/80">
+            {{ group.title }}
+          </p>
+          <div class="space-y-1">
+            @for (item of group.items; track item.path) {
+              <a
+                [routerLink]="item.path"
+                routerLinkActive="bg-primary text-white shadow-md"
+                class="flex items-center gap-3 rounded-lg px-4 py-3 font-label text-xs font-semibold uppercase tracking-widest text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface"
+              >
+                <span class="material-symbols-outlined text-lg">{{ item.icon }}</span>
+                {{ item.label }}
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </nav>
+
+    <div class="px-3 pb-4">
+      <a class="btn-primary w-full" routerLink="/routes" [queryParams]="{ newRoute: 'true' }">
+        <span class="material-symbols-outlined text-sm">add_road</span>
+        Nueva ruta
+      </a>
+    </div>
+
+    <footer class="space-y-1 border-t border-outline-variant/20 px-3 py-4">
+      <button class="flex w-full items-center gap-3 rounded-lg px-4 py-2 font-label text-[10px] uppercase tracking-widest text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" type="button" (click)="openSupport()">
+        <span class="material-symbols-outlined text-base">help</span>
+        Soporte
+      </button>
+      <button class="flex w-full items-center gap-3 rounded-lg px-4 py-2 font-label text-[10px] uppercase tracking-widest text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" type="button" (click)="openLogs()">
+        <span class="material-symbols-outlined text-base">terminal</span>
+        Registros
+      </button>
+    </footer>
+  </aside>
+
+  @if (mobileMenuOpen()) {
+    <button class="fixed inset-0 z-30 bg-black/50 md:hidden" type="button" aria-label="Cerrar navegación" (click)="toggleMobileMenu()"></button>
+  }
+
+  @if (supportOpen() || logsOpen()) {
+    <section class="fixed bottom-5 left-5 z-50 w-[min(92vw,360px)] rounded-xl border border-outline-variant/20 bg-surface-container-high p-4 shadow-xl md:left-72">
+      @if (supportOpen()) {
+        <h2 class="font-headline text-sm font-bold uppercase tracking-widest text-on-surface">Soporte operativo</h2>
+        <p class="mt-2 text-xs leading-relaxed text-on-surface-variant">Comparte el código de sesión con soporte para ubicar estado, ruta activa y navegador.</p>
+        <button class="btn-primary mt-4" type="button" (click)="copySupportCode()">Copiar código</button>
+      }
+      @if (logsOpen()) {
+        <h2 class="font-headline text-sm font-bold uppercase tracking-widest text-on-surface">Registros recientes</h2>
+        <div class="mt-3 space-y-2 font-mono text-[10px] text-on-surface-variant">
+          <p>[OK] Backend central conectado</p>
+          <p>[OK] Proxy /api/vanguard-transit activo</p>
+          <p>[INFO] Vista actual: {{ activeLabel() }}</p>
+        </div>
+      }
+    </section>
+  }
+
+  @if (toast()) {
+    <div class="fixed bottom-5 right-5 z-50 rounded-xl border border-primary/30 bg-surface-container-high px-4 py-3 text-xs font-bold text-on-surface shadow-xl">
+      {{ toast() }}
+    </div>
+  }
+
+  <main class="min-h-screen pt-16 md:pl-64">
+    <router-outlet></router-outlet>
+  </main>
+</div>

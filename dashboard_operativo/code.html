@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&amp;family=Inter:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#004f69",
+                    "on-surface-variant": "#a3aac4",
+                    "on-surface": "#dee5ff",
+                    "on-tertiary-container": "#00465d",
+                    "primary-fixed": "#00f4fe",
+                    "surface-dim": "#060e20",
+                    "surface-bright": "#1f2b49",
+                    "on-primary-fixed-variant": "#006266",
+                    "outline-variant": "#40485d",
+                    "on-primary-fixed": "#004346",
+                    "surface-container": "#0f1930",
+                    "on-error-container": "#ffa8a3",
+                    "on-tertiary-fixed": "#003041",
+                    "surface-container-lowest": "#000000",
+                    "background": "#060e20",
+                    "error-dim": "#d7383b",
+                    "surface": "#060e20",
+                    "on-secondary": "#475266",
+                    "secondary-container": "#3c475a",
+                    "tertiary-container": "#7bd1fa",
+                    "secondary-fixed": "#d8e3fb",
+                    "tertiary": "#9bddff",
+                    "primary": "#a1faff",
+                    "surface-container-highest": "#192540",
+                    "on-primary-container": "#00575b",
+                    "primary-container": "#00f4fe",
+                    "surface-tint": "#a1faff",
+                    "primary-fixed-dim": "#00e5ee",
+                    "on-background": "#dee5ff",
+                    "error": "#ff716c",
+                    "secondary-fixed-dim": "#cad5ed",
+                    "tertiary-dim": "#6cc3eb",
+                    "primary-dim": "#00e5ee",
+                    "outline": "#6d758c",
+                    "on-error": "#490006",
+                    "error-container": "#9f0519",
+                    "on-secondary-fixed": "#354053",
+                    "tertiary-fixed-dim": "#6cc3eb",
+                    "secondary": "#d8e3fb",
+                    "inverse-primary": "#006a6e",
+                    "inverse-surface": "#faf8ff",
+                    "surface-container-low": "#091328",
+                    "inverse-on-surface": "#4d556b",
+                    "on-secondary-fixed-variant": "#515c70",
+                    "on-primary": "#006165",
+                    "on-secondary-container": "#c5d1e8",
+                    "secondary-dim": "#cad5ed",
+                    "surface-container-high": "#141f38",
+                    "surface-variant": "#192540",
+                    "on-tertiary-fixed-variant": "#004f69",
+                    "tertiary-fixed": "#7bd1fa"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(25, 37, 64, 0.6);
+            backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-glow-primary {
+            text-shadow: 0 0 8px rgba(0, 244, 254, 0.4);
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .metric-value { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary selection:text-on-primary overflow-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 z-50 bg-[#060e20] border-b border-[#40485d]/15 flex justify-between items-center px-6 py-3 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tighter text-[#a1faff] uppercase font-['Space_Grotesk']">KINETIC PRECISION</span>
+<div class="hidden md:flex items-center bg-surface-container-highest/40 px-4 py-1.5 rounded-xl border border-outline-variant/15">
+<span class="material-symbols-outlined text-primary-fixed-dim text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm font-['Space_Grotesk'] text-on-surface-variant w-64 placeholder:opacity-50" placeholder="Search systems..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#141f38] transition-colors duration-200 rounded-lg relative">
+<span class="material-symbols-outlined text-[#a1faff]">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-background"></span>
+</button>
+<button class="p-2 hover:bg-[#141f38] transition-colors duration-200 rounded-lg">
+<span class="material-symbols-outlined text-[#a1faff]">settings</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-[#40485d]/15">
+<div class="text-right hidden sm:block">
+<p class="text-[10px] font-bold tracking-widest text-on-surface-variant uppercase">Fleet Manager</p>
+<p class="text-xs text-primary font-medium">COMMAND_ALPHA</p>
+</div>
+<img alt="Fleet Manager Profile" class="w-10 h-10 rounded-full border border-primary/20" data-alt="Close-up portrait of a professional male fleet manager in a dark tech environment with blue ambient lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDI75VuekmmyJmAQmT1ccQleY5NZjguAiTH-QhoZzoIJZaxwWoTggXiLQ6teS1XZOsQswFHxNr7d8ZAbJja8LbBKOY6sisHFUIrTwrxWwKpEWliBeDfwWc0z2iiU0cZrlKZ7TJ4VrCg7tEUEunrGXCe6rRCYEb50DtjXcz_I8AMo_r1TuMLXVdSIu8g_RQ1UNfQy35elERyBXCxZphkrzmozMtwnuxW5zjn81Z2lpS7aWVmIvGX87NqTiAeRDVt9L5muQ3rXzlwsWuf"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col pt-16 bg-[#091328] w-64 border-r border-[#40485d]/15 shadow-[24px_0_48px_-12px_rgba(0,244,254,0.04)] z-40">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-2 h-2 bg-primary animate-pulse rounded-full"></div>
+<span class="font-['Inter'] text-xs font-medium uppercase tracking-widest text-[#00f4fe]">OPERATIONS</span>
+</div>
+<p class="text-[10px] text-on-surface-variant opacity-60 tracking-[0.2em] font-medium">V-01 PRECISION</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="text-[#a1faff] bg-[#141f38] border-r-4 border-[#00f4fe] px-6 py-4 flex items-center gap-4 transition-all duration-300 ease-in-out font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-6 py-4 flex items-center gap-4 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 ease-in-out font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="calculate">calculate</span>
+                Deadhead Calc
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-6 py-4 flex items-center gap-4 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 ease-in-out font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="route">route</span>
+                Route Planner
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-6 py-4 flex items-center gap-4 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 ease-in-out font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+                Analytics
+            </a>
+</nav>
+<div class="px-6 py-6">
+<button class="w-full py-3 bg-gradient-to-r from-primary to-primary-container text-on-primary font-bold rounded-xl text-[10px] tracking-widest uppercase hover:opacity-90 transition-opacity">
+                NEW ROUTE
+            </button>
+</div>
+<div class="mt-auto border-t border-[#40485d]/15">
+<a class="text-[#d8e3fb] opacity-60 px-6 py-4 flex items-center gap-4 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 ease-in-out font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+                Support
+            </a>
+<a class="text-[#d8e3fb] opacity-60 px-6 py-4 flex items-center gap-4 hover:bg-[#192540] hover:text-[#a1faff] transition-all duration-300 ease-in-out font-['Inter'] text-xs font-medium uppercase tracking-widest" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+                Logs
+            </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-16 min-h-screen bg-background overflow-y-auto">
+<div class="p-8 space-y-8 max-w-[1600px] mx-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-end gap-4">
+<div>
+<h1 class="text-4xl font-bold tracking-tight text-on-surface">OPERATIONAL OVERVIEW</h1>
+<p class="text-on-surface-variant font-['Inter'] text-sm tracking-wide mt-1">REAL-TIME TELEMETRY &amp; FLEET OPTIMIZATION</p>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-surface-container-high rounded text-[10px] font-bold text-primary tracking-tighter uppercase">System Status: NOMINAL</span>
+<span class="px-3 py-1 bg-surface-container-high rounded text-[10px] font-bold text-on-surface-variant tracking-tighter uppercase">UTC: 14:32:05</span>
+</div>
+</div>
+<!-- Bento Grid - KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-primary group hover:bg-surface-container-high transition-colors">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] mb-2">ACTIVE FLEET</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold metric-value text-primary">1,248</span>
+<span class="text-[10px] font-bold text-primary opacity-50 uppercase">Vehicles</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-[10px] text-primary">
+<span class="material-symbols-outlined text-xs">trending_up</span>
+<span>+12.4% vs last cycle</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-primary-container group hover:bg-surface-container-high transition-colors">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] mb-2">EFFICIENCY RATE</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold metric-value text-on-surface">94.2</span>
+<span class="text-[10px] font-bold text-on-surface-variant opacity-50 uppercase">%</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-[10px] text-primary-fixed">
+<span class="material-symbols-outlined text-xs">check_circle</span>
+<span>Target: 92.0%</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-tertiary group hover:bg-surface-container-high transition-colors">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] mb-2">FUEL CONSUMPTION</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold metric-value text-tertiary">38.4</span>
+<span class="text-[10px] font-bold text-on-surface-variant opacity-50 uppercase">L/100km</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-[10px] text-tertiary">
+<span class="material-symbols-outlined text-xs">trending_down</span>
+<span>-2.1% optimization</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-xl border-l-2 border-error group hover:bg-surface-container-high transition-colors">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-[0.2em] mb-2">DEADHEAD DISTANCE</p>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-bold metric-value text-error">412</span>
+<span class="text-[10px] font-bold text-on-surface-variant opacity-50 uppercase">km</span>
+</div>
+<div class="mt-4 flex items-center gap-1 text-[10px] text-error">
+<span class="material-symbols-outlined text-xs">warning</span>
+<span>Critical: Zone Alpha</span>
+</div>
+</div>
+</div>
+<!-- Dashboard Body: Map & Activity -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Live Map Section -->
+<div class="lg:col-span-2 space-y-4">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-bold tracking-tight text-on-surface">LIVE FLEET TOPOLOGY</h3>
+<div class="flex gap-4">
+<button class="text-[10px] font-bold text-primary tracking-widest uppercase">Layer: Thermal</button>
+<button class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Layer: Traffic</button>
+</div>
+</div>
+<div class="h-[500px] bg-surface-container-lowest rounded-2xl relative overflow-hidden group">
+<img alt="Digital dark city map" class="w-full h-full object-cover opacity-40 grayscale" data-alt="Digital grid-style map of a metropolitan city at night with neon blue and cyan highlights representing transport routes" data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChHyM03fYUTpFZwCr0eKT_FDpT1BdyfUe0-kG1rHYf3rPNPj9P1rtEZ3iQDuikaJssg_5eUs1sQEWJc0Z51snni943riJCul1OaHQQxLjXhd7A_62N_g6tt2sMd7BapXcnIyRUSc-v_4crN-N3pcYJpx3BHztKhWSxTuvA2MaCiRBl0VsbJnBxVnb6-nAOxxALn5H-Zrc7EO3e0IDdcwjTybLpS3Dlr4s_NJ3b3CmnC5NeRRXN0In_tvrvgNAZCbm2758_lydekO0L"/>
+<!-- Map Overlays (Glassmorphism) -->
+<div class="absolute top-6 left-6 glass-panel p-4 rounded-xl border border-outline-variant/15 w-48">
+<p class="text-[10px] font-bold text-primary-fixed mb-3 tracking-widest">ACTIVE NODES</p>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-on-surface-variant uppercase">Metro Rail</span>
+<span class="text-[10px] text-primary font-bold">88/90</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-primary w-[95%] h-full"></div>
+</div>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[10px] text-on-surface-variant uppercase">Surface Bus</span>
+<span class="text-[10px] text-primary font-bold">1160/1200</span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-primary-container w-[90%] h-full"></div>
+</div>
+</div>
+</div>
+<!-- Floating Map Pin Simulation -->
+<div class="absolute top-1/2 left-1/3">
+<div class="relative">
+<div class="w-4 h-4 bg-primary rounded-full animate-ping opacity-75 absolute -inset-0"></div>
+<div class="w-4 h-4 bg-primary rounded-full relative border-2 border-background"></div>
+<div class="absolute top-6 left-1/2 -translate-x-1/2 bg-surface-container-highest/90 backdrop-blur px-2 py-1 rounded text-[8px] font-bold text-on-surface border border-primary/20 whitespace-nowrap">
+                                    VEHICLE_B774
+                                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Quick Actions & Log -->
+<div class="space-y-8">
+<!-- Quick Actions -->
+<section class="space-y-4">
+<h3 class="text-lg font-bold tracking-tight text-on-surface">QUICK ACTIONS</h3>
+<div class="grid grid-cols-2 gap-3">
+<button class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/15 hover:border-primary/50 transition-all flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">schedule</span>
+<span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Shift Opt</span>
+</button>
+<button class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/15 hover:border-primary/50 transition-all flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">ev_station</span>
+<span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Refuel Log</span>
+</button>
+<button class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/15 hover:border-primary/50 transition-all flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">history</span>
+<span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Recalc Path</span>
+</button>
+<button class="bg-surface-container-high p-4 rounded-xl border border-outline-variant/15 hover:border-primary/50 transition-all flex flex-col items-center gap-2 group">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">description</span>
+<span class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Gen Report</span>
+</button>
+</div>
+</section>
+<!-- Activity Log -->
+<section class="space-y-4 flex-1">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-bold tracking-tight text-on-surface uppercase">ACTIVITY LOG</h3>
+<button class="text-[10px] font-bold text-primary tracking-widest uppercase">VIEW ALL</button>
+</div>
+<div class="bg-surface-container-low rounded-xl border border-outline-variant/10 overflow-hidden divide-y divide-outline-variant/10">
+<div class="p-4 flex gap-4 hover:bg-surface-container-high transition-colors">
+<div class="w-8 h-8 rounded bg-error/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-error text-lg">priority_high</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold text-on-surface uppercase">Route Delay: Line 42</p>
+<p class="text-[10px] text-on-surface-variant">Congestion at Sector 7 causing 12min backup. Redirect recommended.</p>
+<p class="text-[9px] text-on-surface-variant/50 font-mono">02:14 PM</p>
+</div>
+</div>
+<div class="p-4 flex gap-4 hover:bg-surface-container-high transition-colors">
+<div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold text-on-surface uppercase">Deadhead Recalc Complete</p>
+<p class="text-[10px] text-on-surface-variant">Optimization engine reduced total distance by 14km today.</p>
+<p class="text-[9px] text-on-surface-variant/50 font-mono">01:55 PM</p>
+</div>
+</div>
+<div class="p-4 flex gap-4 hover:bg-surface-container-high transition-colors">
+<div class="w-8 h-8 rounded bg-secondary-container/10 flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-secondary-fixed text-lg">commute</span>
+</div>
+<div class="space-y-1">
+<p class="text-xs font-bold text-on-surface uppercase">Fleet Expansion</p>
+<p class="text-[10px] text-on-surface-variant">4 new electric units integrated into active duty rotation.</p>
+<p class="text-[9px] text-on-surface-variant/50 font-mono">11:30 AM</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Technical Bottom Strip -->
+<div class="pt-8 border-t border-outline-variant/10">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">System Engine</p>
+<p class="text-xs font-['Space_Grotesk'] text-on-surface">KINETIC-PRECISION CORE v4.2.0</p>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Data Latency</p>
+<p class="text-xs font-['Space_Grotesk'] text-primary">14ms [STABLE]</p>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">Operator Access</p>
+<p class="text-xs font-['Space_Grotesk'] text-on-surface">AUTH_LEVEL_COMMAND</p>
+</div>
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-on-surface-variant tracking-widest uppercase">System Uptime</p>
+<p class="text-xs font-['Space_Grotesk'] text-on-surface">1,442 Hours</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="../static-interactions.js"></script>
+</body></html>

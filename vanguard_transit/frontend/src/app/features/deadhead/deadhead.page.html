@@ -1,0 +1,167 @@
+<section class="space-y-8 p-5 md:p-8">
+  <div class="mx-auto max-w-[1600px] space-y-8">
+    <header class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+      <div class="max-w-3xl">
+        <h1 class="font-headline text-3xl font-bold tracking-tight text-on-surface md:text-4xl">Calculadora de Movimientos en Vacío</h1>
+        <p class="mt-2 text-sm leading-relaxed text-on-surface-variant">
+          Optimice turnos fuera de servicio usando inteligencia espacial, ventanas operacionales y modelos predictivos de consumo.
+        </p>
+        <p class="mt-2 font-label text-[10px] uppercase tracking-widest text-primary">{{ lastCalculated() }}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <button class="btn-secondary" type="button" (click)="exportReport()">
+          <span class="material-symbols-outlined text-lg">file_download</span>
+          Exportar informe
+        </button>
+        <button class="btn-primary" type="button" (click)="calculate()">
+          <span class="material-symbols-outlined text-lg">bolt</span>
+          Calcular
+        </button>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-12 gap-6">
+      <section class="col-span-12 space-y-6 xl:col-span-4">
+        <form class="card space-y-5" [formGroup]="form" (ngSubmit)="calculate()">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary">tune</span>
+            <h2 class="section-title">Parámetros</h2>
+          </div>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Depósito de origen</mat-label>
+            <mat-select formControlName="origin">
+              @for (origin of origins; track origin) {
+                <mat-option [value]="origin">{{ origin }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Depósito de destino</mat-label>
+            <mat-select formControlName="destination">
+              @for (destination of destinations; track destination) {
+                <mat-option [value]="destination">{{ destination }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <mat-form-field appearance="fill">
+              <mat-label>Inicio de ventana</mat-label>
+              <input matInput type="time" formControlName="windowStart">
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Fin de ventana</mat-label>
+              <input matInput type="time" formControlName="windowEnd">
+            </mat-form-field>
+          </div>
+
+          <div>
+            <p class="mb-3 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Configuración de flota</p>
+            <div class="grid gap-2">
+              <mat-checkbox formControlName="electricBus">Bus eléctrico</mat-checkbox>
+              <mat-checkbox formControlName="dieselBus">Diésel articulado</mat-checkbox>
+              <mat-checkbox formControlName="hydrogenBus">Hidrógeno celda</mat-checkbox>
+            </div>
+          </div>
+
+          <button class="btn-primary w-full" type="submit">
+            <span class="material-symbols-outlined text-lg">calculate</span>
+            Recalcular escenario
+          </button>
+        </form>
+
+        <article class="card">
+          <div class="mb-4 flex items-center justify-between">
+            <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Índice de eficiencia</span>
+            <span class="font-headline font-bold text-primary">{{ stats().efficiency }}%</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-surface-container-highest">
+            <div class="h-full bg-primary" [style.width.%]="stats().efficiency"></div>
+          </div>
+          <p class="mt-4 text-[11px] leading-relaxed text-on-surface-variant">{{ stats().note }}</p>
+        </article>
+      </section>
+
+      <section class="col-span-12 space-y-6 xl:col-span-8">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <article class="card-accent-primary">
+            <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Ahorro estimado</span>
+            <div class="mt-4 flex items-baseline gap-2">
+              <span class="font-headline text-3xl font-bold text-primary">{{ stats().savings }}</span>
+              <span class="font-label text-[10px] text-on-surface-variant">/ MES</span>
+            </div>
+          </article>
+          <article class="card-accent-tertiary">
+            <span class="font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Reducción de CO2</span>
+            <div class="mt-4 flex items-baseline gap-2">
+              <span class="font-headline text-3xl font-bold text-tertiary">{{ stats().co2 }}</span>
+              <span class="font-label text-[10px] text-on-surface-variant">CO2eq</span>
+            </div>
+          </article>
+          <article class="card-accent-secondary">
+            <span class="font-label text-[10px] font-bold uppercase tracking-widest text-secondary">Rutas optimizadas</span>
+            <div class="mt-4 flex items-baseline gap-2">
+              <span class="font-headline text-3xl font-bold text-on-surface">{{ stats().optimizedRoutes }}</span>
+              <span class="font-label text-[10px] text-on-surface-variant">ACTIVAS</span>
+            </div>
+          </article>
+        </div>
+
+        <article class="card">
+          <div class="mb-8 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 class="section-title">Tendencia de eficiencia en vacío</h2>
+              <p class="text-[11px] text-on-surface-variant">Kilómetros no comerciales vs costo energético, escenario actual</p>
+            </div>
+            <div class="flex gap-4 font-label text-[10px] font-bold uppercase text-on-surface-variant">
+              <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-primary"></span>Eficiencia</span>
+              <span class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-outline"></span>Línea base</span>
+            </div>
+          </div>
+          <div class="relative flex h-48 items-end gap-1 px-2">
+            <div class="pointer-events-none absolute inset-0 flex flex-col justify-between border-b border-outline-variant/20 py-1">
+              <div class="border-t border-outline-variant/10"></div>
+              <div class="border-t border-outline-variant/10"></div>
+              <div class="border-t border-outline-variant/10"></div>
+            </div>
+            @for (height of trendBars(); track $index) {
+              <div class="z-10 flex-1 rounded-t-sm bg-primary/30 transition-colors hover:bg-primary" [style.height.%]="height"></div>
+            }
+          </div>
+        </article>
+
+        <article class="card overflow-hidden p-0">
+          <div class="flex items-center justify-between border-b border-outline-variant/10 p-4">
+            <h2 class="font-headline text-sm font-bold uppercase tracking-tight text-on-surface">Variantes de ruta calculadas</h2>
+            <app-status-badge [label]="routes().length + ' coincidencias'" tone="primary"></app-status-badge>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[720px] text-left">
+              <thead class="bg-surface-container-low">
+                <tr>
+                  @for (heading of ['ID Ruta', 'Distancia', 'Duración', 'Costo Est.', 'Ahorro', 'Estado']; track heading) {
+                    <th class="p-4 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{{ heading }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (route of routes(); track route.id) {
+                  <tr class="border-t border-outline-variant/5 hover:bg-surface-container-high">
+                    <td class="p-4 font-mono text-xs text-on-surface">{{ route.id }}</td>
+                    <td class="p-4 text-xs text-on-surface">{{ route.distance }}</td>
+                    <td class="p-4 text-xs text-on-surface">{{ route.duration }}</td>
+                    <td class="p-4 text-xs text-on-surface">{{ route.cost }}</td>
+                    <td class="p-4 text-xs font-bold" [ngClass]="savingsClass(route.savings)">{{ route.savings }}</td>
+                    <td class="p-4"><app-status-badge [label]="route.status" [tone]="statusTone(route.status)"></app-status-badge></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </div>
+  </div>
+</section>
