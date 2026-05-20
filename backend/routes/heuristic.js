@@ -8,12 +8,16 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Paths relativos al repo (la carpeta backend vive en App_piloto_transporte_v2/backend)
-const REPO_ROOT = path.resolve(__dirname, '..', '..', '..');
-const PYTHON_SCRIPT = path.join(REPO_ROOT, 'Codigo', 'heurística_POs_USs_2026.py');
-const RUNS_ROOT = path.join(REPO_ROOT, 'App_piloto_transporte_v2', 'backend', 'runs', 'heuristic');
+// Paths relativos al backend (vive en <repo>/backend)
+const BACKEND_ROOT = path.resolve(__dirname, '..');
+const PYTHON_SCRIPT =
+  process.env.ASINT_PYTHON_SCRIPT ||
+  path.join(BACKEND_ROOT, 'scripts', 'heuristica_POs_USs_2026.py');
+const RUNS_ROOT = path.join(BACKEND_ROOT, 'runs', 'heuristic');
 
-// Comando Python configurable por env (default: anaconda en Windows del usuario actual)
+// Comando Python configurable por env.
+//  - Linux / Docker: python3
+//  - Windows local con Anaconda: %USERPROFILE%\anaconda3\python.exe (default si no hay env var)
 const PYTHON_CMD =
   process.env.ASINT_PYTHON_CMD ||
   (process.platform === 'win32'

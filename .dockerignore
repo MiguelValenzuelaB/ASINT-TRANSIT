@@ -1,0 +1,51 @@
+# Reduce el contexto que Docker envia al daemon (acelera builds y achica capas).
+# Solo necesitamos backend/ + scripts Python. El frontend Angular vive en Netlify.
+
+# Dependencias instaladas localmente (se reinstalan dentro del contenedor)
+node_modules
+**/node_modules
+
+# Frontend Angular: no se ejecuta en Render
+vanguard_transit/
+an_lisis_y_reportes/
+calculadora_de_movimientos_en_vac_o/
+dashboard_operativo/
+planificador_de_rutas/
+static-interactions.js
+
+# Manifests del orquestador (no aplican al contenedor de backend)
+package.json
+package-lock.json
+
+# Outputs de runs locales (sandboxing del usuario en su Windows)
+backend/runs/
+
+# Builds del frontend
+dist
+**/dist
+.angular
+
+# Git y CI
+.git
+.gitignore
+.gitattributes
+.github
+.netlify
+netlify.toml
+
+# Logs y temporales
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode
+.idea
+
+# Docker mismo (no se autoincluye)
+Dockerfile
+.dockerignore
+
+# Docs
+README.md

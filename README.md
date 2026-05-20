@@ -5,9 +5,13 @@ Plataforma operacional para la planificación y ejecución del servicio de trans
 ## Arquitectura
 
 ```
-App_piloto_transporte_v2/
+ASINT-TRANSIT/
+├── Dockerfile                  # Imagen para Render (Node 20 + Python 3 + libs)
+├── netlify.toml                # Deploy del frontend en Netlify
 ├── backend/                    # API Express (Node 18+, ESM)
 │   ├── server.js               # Servidor principal en puerto 3001
+│   ├── scripts/
+│   │   └── heuristica_POs_USs_2026.py
 │   └── routes/
 │       ├── vanguardTransit.js  # Endpoints de KPIs, costos, rutas
 │       └── heuristic.js        # Ejecuta el script Python por heurística
@@ -15,10 +19,6 @@ App_piloto_transporte_v2/
     └── frontend/               # Aplicación Angular 19 (Tailwind + Material)
         └── src/app/features/   # Páginas de la plataforma
 ```
-
-> El script Python que ejecuta el backend vive **fuera** del repo en
-> `<repo_padre>/Codigo/heurística_POs_USs_2026.py`. Esa ruta es relativa a la raíz
-> del repositorio y la calcula `routes/heuristic.js` automáticamente.
 
 ## Páginas
 
@@ -126,7 +126,43 @@ Variables de entorno opcionales del script (con defaults sensatos):
 npm run build
 ```
 
-Genera el bundle estático del frontend en `vanguard_transit/frontend/dist/`. El backend Express puede servir esos estáticos en producción o puedes alojar el frontend en un CDN apuntando `/api/*` al backend.
+Genera el bundle estático del frontend en `vanguard_transit/frontend/dist/vanguard-transit-frontend/browser/`.
+
+## Deploy
+
+El proyecto se despliega en dos servicios separados:
+
+### Frontend → Netlify (estático)
+
+Configurado en `netlify.toml`:
+- `base = "vanguard_transit/frontend"`
+- `publish = "dist/vanguard-transit-frontend/browser"`
+- Redirect SPA `/*` → `/index.html`
+
+Después del deploy, agrega un redirect adicional en Netlify para que `/api/*` apunte al backend en Render:
+
+```toml
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://<tu-servicio>.onrender.com/api/:splat"
+  status = 200
+  force  = true
+```
+
+### Backend → Render (Web Service tipo Docker)
+
+El `Dockerfile` en la raíz construye una imagen con Node 20, Python 3 y las libs científicas. En Render:
+
+1. **New + Web Service** → conecta el repo `MiguelValenzuelaB/ASINT-TRANSIT`
+2. **Environment**: `Docker`
+3. **Branch**: `main`
+4. **Dockerfile Path**: `Dockerfile`
+5. **Variables de entorno** (opcionales):
+   - `CORS_ORIGINS` con la URL del Netlify si fueras a llamar desde el navegador en lugar de via redirect
+   - Cualquier `ASINT_*` que quieras sobreescribir
+6. **Health Check Path**: `/health`
+
+Render asigna automáticamente la variable `PORT`; el servidor Express ya la respeta.
 
 ## Diseño
 
