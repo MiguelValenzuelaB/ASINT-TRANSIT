@@ -13,6 +13,20 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Proxy de la API al backend en Render (debe ir ANTES del SPA fallback).
+# force = true para que tenga prioridad incluso si existiera /api en el bundle.
+[[redirects]]
+  from   = "/api/*"
+  to     = "https://asint-transit.onrender.com/api/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/health"
+  to     = "https://asint-transit.onrender.com/health"
+  status = 200
+  force  = true
+
 # SPA fallback: cualquier ruta profunda (/planning/heuristic, /dashboard, etc.)
 # se sirve con index.html y deja que Angular Router resuelva.
 [[redirects]]
