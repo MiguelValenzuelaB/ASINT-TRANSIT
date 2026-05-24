@@ -33,3 +33,6 @@ __pycache__/
 *.pyc
 *.pyo
 .ipynb_checkpoints/
+
+# Notas locales / contexto de Claude (no se publican)
+notes/
