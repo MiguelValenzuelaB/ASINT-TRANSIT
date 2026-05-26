@@ -105,10 +105,10 @@
   </header>
 
   <aside
-    class="fixed bottom-0 left-0 top-16 z-40 w-64 border-r border-outline-variant/20 bg-surface-container-low transition-transform duration-200 md:translate-x-0"
+    class="fixed bottom-0 left-0 top-16 z-40 flex w-64 flex-col border-r border-outline-variant/20 bg-surface-container-low transition-transform duration-200 md:translate-x-0"
     [ngClass]="mobileMenuOpen() ? 'translate-x-0' : '-translate-x-full'"
   >
-    <div class="border-b border-outline-variant/20 px-6 py-6">
+    <div class="shrink-0 border-b border-outline-variant/20 px-6 py-6">
       <div class="mb-1 flex items-center gap-2">
         <span class="h-2 w-2 animate-pulse rounded-full bg-primary"></span>
         <p class="font-headline text-xs font-semibold uppercase tracking-widest text-primary">Operaciones</p>
@@ -116,7 +116,7 @@
       <p class="font-label text-[10px] uppercase tracking-wider text-on-surface-variant/70">V-01 Precision</p>
     </div>
 
-    <nav class="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+    <nav class="min-h-0 flex-1 space-y-4 overflow-y-auto px-3 py-4 sidebar-scroll">
       @for (group of navGroups; track group.title) {
         <div>
           <p class="px-4 pb-2 font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/80">
@@ -138,14 +138,14 @@
       }
     </nav>
 
-    <div class="px-3 pb-4">
+    <div class="shrink-0 px-3 pb-4">
       <a class="btn-primary w-full" routerLink="/routes" [queryParams]="{ newRoute: 'true' }">
         <span class="material-symbols-outlined text-sm">add_road</span>
         Nueva ruta
       </a>
     </div>
 
-    <footer class="space-y-1 border-t border-outline-variant/20 px-3 py-4">
+    <footer class="shrink-0 space-y-1 border-t border-outline-variant/20 px-3 py-4">
       <button class="flex w-full items-center gap-3 rounded-lg px-4 py-2 font-label text-[10px] uppercase tracking-widest text-on-surface-variant transition-colors hover:bg-surface-container-high hover:text-on-surface" type="button" (click)="openSupport()">
         <span class="material-symbols-outlined text-base">help</span>
         Soporte

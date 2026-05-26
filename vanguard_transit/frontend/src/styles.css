@@ -150,6 +150,25 @@ textarea {
   display: none;
 }
 
+/* Scrollbar fino para el sidebar (Firefox + WebKit). */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 58, 107, 0.35) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(26, 58, 107, 0.35);
+  border-radius: 3px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(26, 58, 107, 0.55);
+}
+
 .fleet-map,
 .leaflet-container {
   background: #E8EDF3;
