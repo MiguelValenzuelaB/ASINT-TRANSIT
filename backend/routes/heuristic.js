@@ -2,7 +2,8 @@ import { Router } from 'express';
 import multer from 'multer';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readdir, stat } from 'node:fs/promises';
+import { mkdir, readdir, rm, stat } from 'node:fs/promises';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -13,6 +14,7 @@ const BACKEND_ROOT = path.resolve(__dirname, '..');
 const PYTHON_SCRIPT =
   process.env.ASINT_PYTHON_SCRIPT ||
   path.join(BACKEND_ROOT, 'scripts', 'heuristica_POs_USs_2026.py');
+const LIST_SHEETS_SCRIPT = path.join(BACKEND_ROOT, 'scripts', 'list_sheets.py');
 const RUNS_ROOT = path.join(BACKEND_ROOT, 'runs', 'heuristic');
 
 // Comando Python configurable por env.
@@ -24,6 +26,7 @@ const PYTHON_CMD =
     ? path.join(process.env.USERPROFILE || '', 'anaconda3', 'python.exe')
     : 'python3');
 
+// Upload para /run: crea sandbox persistente en runs/<uuid>/
 const upload = multer({
   storage: multer.diskStorage({
     destination: async (_req, _file, cb) => {
@@ -47,6 +50,24 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50 MB
 });
 
+// Upload para /sheets: archivo temporal, se borra al terminar
+const sheetsUpload = multer({
+  storage: multer.diskStorage({
+    destination: async (_req, _file, cb) => {
+      try {
+        const tmpDir = path.join(os.tmpdir(), 'asint-sheets', randomUUID());
+        await mkdir(tmpDir, { recursive: true });
+        _req.tmpDir = tmpDir;
+        cb(null, tmpDir);
+      } catch (err) {
+        cb(err, '');
+      }
+    },
+    filename: (_req, file, cb) => cb(null, file.originalname),
+  }),
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
 const router = Router();
 
 router.get('/status', (_req, res) => {
@@ -54,6 +75,47 @@ router.get('/status', (_req, res) => {
     pythonCmd: PYTHON_CMD,
     pythonScript: PYTHON_SCRIPT,
     runsRoot: RUNS_ROOT,
+  });
+});
+
+router.post('/sheets', sheetsUpload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'Falta el archivo (campo "file").' });
+  }
+  const inputFile = req.file.path;
+  const tmpDir = req.tmpDir;
+
+  const child = spawn(PYTHON_CMD, ['-X', 'utf8', LIST_SHEETS_SCRIPT, inputFile], {
+    env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
+  });
+
+  let stdout = '';
+  let stderr = '';
+  child.stdout.on('data', (chunk) => { stdout += chunk.toString(); });
+  child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
+
+  child.on('error', (err) => {
+    rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+    res.status(500).json({ error: 'No se pudo iniciar Python.', detail: err.message });
+  });
+
+  child.on('close', async (code) => {
+    await rm(tmpDir, { recursive: true, force: true }).catch(() => {});
+    if (code !== 0) {
+      return res.status(500).json({
+        error: 'No se pudo leer el Excel.',
+        detail: stderr.slice(-1000) || stdout.slice(-1000),
+      });
+    }
+    try {
+      const parsed = JSON.parse(stdout);
+      res.json(parsed);
+    } catch (err) {
+      res.status(500).json({
+        error: 'Respuesta invalida del helper.',
+        detail: stdout.slice(-1000),
+      });
+    }
   });
 });
 
@@ -66,6 +128,7 @@ router.post('/run', upload.single('file'), async (req, res) => {
   const runDir = req.runDir;
   const inputFile = req.file.path;
   const outputDir = path.join(runDir, 'output');
+  const sheetName = typeof req.body?.sheetName === 'string' ? req.body.sheetName.trim() : '';
 
   const startedAt = Date.now();
   const env = {
@@ -75,6 +138,9 @@ router.post('/run', upload.single('file'), async (req, res) => {
     ASINT_OUTPUT_DIR: outputDir,
     PYTHONIOENCODING: 'utf-8',
   };
+  if (sheetName) {
+    env.ASINT_SHEET_NAME = sheetName;
+  }
 
   const child = spawn(PYTHON_CMD, ['-X', 'utf8', PYTHON_SCRIPT], {
     cwd: path.dirname(PYTHON_SCRIPT),
@@ -120,6 +186,7 @@ router.post('/run', upload.single('file'), async (req, res) => {
         exitCode: code,
         durationMs,
         inputFile: path.basename(inputFile),
+        sheetName: sheetName || null,
         files,
         stdoutTail: stdout.slice(-1500),
       });

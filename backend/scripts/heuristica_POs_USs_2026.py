@@ -97,12 +97,24 @@ df_líneas  = dicc_dfs['Licitaciones_líneas']                                  
 df_líneas['ID_línea'] = df_líneas.groupby((df_líneas['unidad de servicio'] != df_líneas['unidad de servicio'].shift()).cumsum()).cumcount()
 
 claves = list(dicc_dfs.keys())
-clave = list(dicc_dfs.keys())[k]
-df = dicc_dfs[clave]
 
-lista_unidades_de_servicios = [s.replace("INPUT_", "") for s in claves[1:]]
-
-unidad_servicio_heurística = lista_unidades_de_servicios[k-1]
+# La hoja a procesar puede venir por variable de entorno (uso desde backend ASINT).
+# Si no, cae al indice k=28 hardcodeado (compatibilidad con uso standalone).
+_sheet_name_env = os.environ.get('ASINT_SHEET_NAME') if ASINT_HEADLESS else None
+if _sheet_name_env:
+    if _sheet_name_env not in dicc_dfs:
+        raise ValueError(
+            f"La hoja '{_sheet_name_env}' no existe en el Excel. "
+            f"Hojas disponibles: {claves}"
+        )
+    clave = _sheet_name_env
+    df = dicc_dfs[clave]
+    unidad_servicio_heurística = clave.replace("INPUT_", "")
+else:
+    clave = claves[k]
+    df = dicc_dfs[clave]
+    lista_unidades_de_servicios = [s.replace("INPUT_", "") for s in claves[1:]]
+    unidad_servicio_heurística = lista_unidades_de_servicios[k-1]
 
 df_líneas_heurística = df_líneas[df_líneas['unidad de servicio'] == unidad_servicio_heurística]
 #del(df_líneas_heurística['unidad de servicio'])

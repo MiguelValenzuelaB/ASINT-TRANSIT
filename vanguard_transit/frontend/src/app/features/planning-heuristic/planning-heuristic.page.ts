@@ -1,11 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 // El proxy de Netlify mata cualquier respuesta que tarde mas de 26 s.
 // Para el POST que dispara la ejecucion Python (2-3 min) llamamos directo
-// al backend en Render. Las llamadas cortas (status, download) siguen via
-// el proxy de Netlify y usan rutas relativas.
+// al backend en Render. Las llamadas cortas (sheets, status, download)
+// siguen via el proxy de Netlify con rutas relativas.
 const RENDER_BACKEND = 'https://asint-transit.onrender.com';
 
 function longRunUrl(path: string): string {
@@ -28,6 +33,7 @@ interface RunResponse {
   readonly exitCode: number;
   readonly durationMs: number;
   readonly inputFile?: string;
+  readonly sheetName?: string | null;
   readonly files?: OutputFile[];
   readonly stdoutTail?: string;
   readonly stdout?: string;
@@ -36,10 +42,22 @@ interface RunResponse {
   readonly detail?: string;
 }
 
+interface SheetsResponse {
+  readonly sheets?: string[];
+  readonly error?: string;
+  readonly detail?: string;
+}
+
 @Component({
   selector: 'app-planning-heuristic',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="px-4 py-6 md:px-8 md:py-8">
@@ -47,46 +65,88 @@ interface RunResponse {
         <p class="font-label text-[10px] font-bold uppercase tracking-widest text-primary">Planificación operacional</p>
         <h1 class="mt-1 font-headline text-2xl font-bold uppercase tracking-tight text-on-surface md:text-3xl">Por heurística</h1>
         <p class="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface-variant">
-          Carga el archivo Excel de entrada y ejecuta el algoritmo heurístico
+          Carga el archivo Excel de entrada, elige la hoja a procesar y ejecuta el algoritmo
+          heurístico
           <code class="rounded bg-surface-container px-1.5 py-0.5 text-[11px] text-primary">heurística_POs_USs_2026.py</code>.
           Los resultados (Excel + gráficos) aparecerán abajo.
         </p>
       </header>
 
       <article class="card-accent-secondary mb-6">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div class="flex items-center gap-4">
-            <span class="material-symbols-outlined text-3xl text-secondary">upload_file</span>
-            <div>
-              <h2 class="section-title">Archivo de entrada</h2>
-              <p class="mt-1 text-xs text-on-surface-variant">
-                Formato esperado: .xlsx (múltiples hojas). Tamaño máximo 50 MB.
-              </p>
-              @if (selectedFile()) {
-                <p class="mt-2 font-mono text-xs text-on-surface">
-                  {{ selectedFile()!.name }}
-                  <span class="text-on-surface-variant">({{ formatBytes(selectedFile()!.size) }})</span>
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-center gap-4">
+              <span class="material-symbols-outlined text-3xl text-secondary">upload_file</span>
+              <div>
+                <h2 class="section-title">Archivo de entrada</h2>
+                <p class="mt-1 text-xs text-on-surface-variant">
+                  Formato esperado: .xlsx (múltiples hojas). Tamaño máximo 50 MB.
                 </p>
-              }
+                @if (selectedFile()) {
+                  <p class="mt-2 font-mono text-xs text-on-surface">
+                    {{ selectedFile()!.name }}
+                    <span class="text-on-surface-variant">({{ formatBytes(selectedFile()!.size) }})</span>
+                  </p>
+                }
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input #fileInput class="hidden" type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)">
+              <button class="btn-secondary" type="button" [disabled]="running()" (click)="fileInput.click()">
+                <span class="material-symbols-outlined text-sm">folder_open</span>
+                Elegir archivo
+              </button>
+              <button class="btn-primary" type="button" [disabled]="!canRun()" (click)="runHeuristic()">
+                @if (running()) {
+                  <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                  Ejecutándose...
+                } @else {
+                  <span class="material-symbols-outlined text-sm">play_arrow</span>
+                  Ejecutar
+                }
+              </button>
             </div>
           </div>
 
-          <div class="flex items-center gap-2">
-            <input #fileInput class="hidden" type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)">
-            <button class="btn-secondary" type="button" [disabled]="running()" (click)="fileInput.click()">
-              <span class="material-symbols-outlined text-sm">folder_open</span>
-              Elegir archivo
-            </button>
-            <button class="btn-primary" type="button" [disabled]="!selectedFile() || running()" (click)="runHeuristic()">
-              @if (running()) {
-                <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
-                Ejecutándose...
-              } @else {
-                <span class="material-symbols-outlined text-sm">play_arrow</span>
-                Ejecutar
+          @if (selectedFile()) {
+            <div class="border-t border-outline-variant/30 pt-4">
+              <label class="mb-2 block font-label text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                Hoja a procesar
+              </label>
+
+              @if (loadingSheets()) {
+                <p class="flex items-center gap-2 text-xs text-on-surface-variant">
+                  <span class="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                  Leyendo hojas del Excel...
+                </p>
+              } @else if (sheets().length > 0) {
+                <mat-form-field appearance="fill" class="w-full max-w-xl">
+                  <mat-label>Empieza a escribir para filtrar ({{ sheets().length }} hojas)</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    [formControl]="sheetControl"
+                    [matAutocomplete]="auto"
+                    placeholder="Ej: INPUT_StgoSP_790-PON 1-1"
+                  >
+                  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+                    @for (sheet of filteredSheets(); track sheet) {
+                      <mat-option [value]="sheet">{{ sheet }}</mat-option>
+                    }
+                    @if (filteredSheets().length === 0) {
+                      <mat-option [disabled]="true">Sin coincidencias</mat-option>
+                    }
+                  </mat-autocomplete>
+                </mat-form-field>
+                @if (typedSheet() && !sheetIsValid()) {
+                  <p class="text-[11px] text-error">
+                    "{{ typedSheet() }}" no coincide con ninguna hoja. Selecciona una de la lista.
+                  </p>
+                }
               }
-            </button>
-          </div>
+            </div>
+          }
         </div>
       </article>
 
@@ -116,6 +176,9 @@ interface RunResponse {
                   Run <span class="font-mono text-on-surface">{{ r.runId }}</span>
                   &middot; {{ (r.durationMs / 1000).toFixed(1) }}s
                   &middot; {{ r.files?.length || 0 }} archivos generados
+                  @if (r.sheetName) {
+                    &middot; hoja <span class="font-mono text-on-surface">{{ r.sheetName }}</span>
+                  }
                 </p>
               </div>
             </div>
@@ -182,10 +245,28 @@ export class PlanningHeuristicPage {
   private readonly http = inject(HttpClient);
 
   readonly selectedFile = signal<File | null>(null);
+  readonly sheets = signal<string[]>([]);
+  readonly loadingSheets = signal(false);
   readonly running = signal(false);
   readonly result = signal<RunResponse | null>(null);
   readonly errorMessage = signal<string | null>(null);
   readonly errorDetail = signal<string | null>(null);
+
+  readonly sheetControl = new FormControl<string>('', { nonNullable: true });
+  readonly typedSheet = toSignal(this.sheetControl.valueChanges, { initialValue: '' });
+
+  readonly filteredSheets = computed(() => {
+    const query = (this.typedSheet() ?? '').toLowerCase().trim();
+    const all = this.sheets();
+    if (!query) return all;
+    return all.filter((s) => s.toLowerCase().includes(query));
+  });
+
+  readonly sheetIsValid = computed(() => this.sheets().includes((this.typedSheet() ?? '').trim()));
+
+  readonly canRun = computed(
+    () => !!this.selectedFile() && this.sheetIsValid() && !this.running() && !this.loadingSheets(),
+  );
 
   readonly excelFiles = computed(() =>
     (this.result()?.files ?? []).filter((f) => f.ext === '.xlsx' || f.ext === '.xls'),
@@ -198,14 +279,39 @@ export class PlanningHeuristicPage {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
     this.selectedFile.set(file);
+    this.sheets.set([]);
+    this.sheetControl.setValue('', { emitEvent: true });
     this.result.set(null);
     this.errorMessage.set(null);
     this.errorDetail.set(null);
+    if (file) {
+      this.fetchSheets(file);
+    }
+  }
+
+  private fetchSheets(file: File): void {
+    this.loadingSheets.set(true);
+    const form = new FormData();
+    form.append('file', file, file.name);
+
+    this.http.post<SheetsResponse>('/api/heuristic/sheets', form).subscribe({
+      next: (res) => {
+        this.loadingSheets.set(false);
+        this.sheets.set(res.sheets ?? []);
+      },
+      error: (err) => {
+        this.loadingSheets.set(false);
+        const body = err.error ?? {};
+        this.errorMessage.set(body.error || err.message || 'No se pudieron leer las hojas del Excel.');
+        this.errorDetail.set(body.detail || null);
+      },
+    });
   }
 
   runHeuristic(): void {
     const file = this.selectedFile();
-    if (!file) return;
+    const sheet = (this.typedSheet() ?? '').trim();
+    if (!file || !sheet) return;
 
     this.running.set(true);
     this.result.set(null);
@@ -214,6 +320,7 @@ export class PlanningHeuristicPage {
 
     const form = new FormData();
     form.append('file', file, file.name);
+    form.append('sheetName', sheet);
 
     this.http.post<RunResponse>(longRunUrl('/api/heuristic/run'), form).subscribe({
       next: (res) => {
