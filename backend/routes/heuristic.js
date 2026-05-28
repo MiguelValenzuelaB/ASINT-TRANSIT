@@ -137,6 +137,13 @@ router.post('/run', upload.single('file'), async (req, res) => {
     ASINT_INPUT_FILE: inputFile,
     ASINT_OUTPUT_DIR: outputDir,
     PYTHONIOENCODING: 'utf-8',
+    // Parametros fijos acordados con el usuario para la ejecucion via web.
+    // Los defaults del script Python (18, 6, 1000, 15) quedan para uso
+    // standalone via env vars sin la web.
+    ASINT_HORAS_BLOQUE: '144',
+    ASINT_HORA_INICIO_BLOQUE: '0',
+    ASINT_LIMITE_EXPEDICION: '1000',
+    ASINT_PASO_MINUTOS: '5',
   };
   if (sheetName) {
     env.ASINT_SHEET_NAME = sheetName;
