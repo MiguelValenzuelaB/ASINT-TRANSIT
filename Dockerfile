@@ -19,6 +19,7 @@ RUN pip3 install --no-cache-dir --break-system-packages \
         "pandas>=2.0,<3.0" \
         "numpy>=1.24,<3.0" \
         "matplotlib>=3.7" \
+        "seaborn>=0.12" \
         "openpyxl>=3.1"
 
 WORKDIR /app

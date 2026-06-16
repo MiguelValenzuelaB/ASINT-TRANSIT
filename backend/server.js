@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import vanguardTransitRouter from './routes/vanguardTransit.js';
 import heuristicRouter from './routes/heuristic.js';
+import puntualidadRouter from './routes/puntualidad.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,12 +24,14 @@ app.get('/api', (_req, res) => {
     services: {
       vanguardTransit: '/api/vanguard-transit',
       heuristic: '/api/heuristic',
+      puntualidad: '/api/puntualidad',
     },
   });
 });
 
 app.use('/api/vanguard-transit', vanguardTransitRouter);
 app.use('/api/heuristic', heuristicRouter);
+app.use('/api/puntualidad', puntualidadRouter);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'NOMINAL', uptime: process.uptime(), timestamp: new Date().toISOString() });
