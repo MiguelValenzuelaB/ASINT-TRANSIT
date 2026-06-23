@@ -56,7 +56,7 @@ interface RunResponse {
               <span class="material-symbols-outlined text-3xl text-secondary">upload_file</span>
               <div>
                 <h3 class="section-title">Archivo de contadores</h3>
-                <p class="mt-1 text-xs text-on-surface-variant">Formato: TXT delimitado por `;` con datos de pasajeros subidos/bajados por puerta.</p>
+                <p class="mt-1 text-xs text-on-surface-variant">Formato: TXT delimitado por punto y coma (;) con datos de pasajeros subidos/bajados por puerta.</p>
                 @if (inputFile()) {
                   <p class="mt-2 font-mono text-xs text-on-surface">
                     {{ inputFile()!.name }}
