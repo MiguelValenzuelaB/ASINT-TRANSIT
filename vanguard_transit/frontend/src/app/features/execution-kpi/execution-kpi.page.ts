@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { KpiIpComponent } from './kpi-ip.component';
+import { KpiTasasComponent } from './kpi-tasas.component';
 
-type KpiTab = 'icf' | 'ip' | 'ir';
+type KpiTab = 'icf' | 'ip' | 'tasas' | 'ir';
 
 @Component({
   selector: 'app-execution-kpi',
   standalone: true,
-  imports: [KpiIpComponent],
+  imports: [KpiIpComponent, KpiTasasComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="px-4 py-6 md:px-8 md:py-8">
@@ -37,6 +38,8 @@ type KpiTab = 'icf' | 'ip' | 'ir';
       <!-- Contenido por pestaña -->
       @if (activeTab() === 'ip') {
         <app-kpi-ip />
+      } @else if (activeTab() === 'tasas') {
+        <app-kpi-tasas />
       } @else if (activeTab() === 'icf') {
         <article class="card-accent-secondary">
           <div class="flex items-start gap-4">
@@ -71,6 +74,7 @@ export class ExecutionKpiPage {
   readonly tabs: { id: KpiTab; label: string }[] = [
     { id: 'icf', label: 'ICF' },
     { id: 'ip',  label: 'IP' },
+    { id: 'tasas', label: 'Tasas' },
     { id: 'ir',  label: 'IR' },
   ];
 }

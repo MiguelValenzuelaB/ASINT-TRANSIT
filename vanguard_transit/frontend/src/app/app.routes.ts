@@ -27,6 +27,10 @@ export const routes: Routes = [
     path: 'execution/kpi',
     loadComponent: () => import('./features/execution-kpi/execution-kpi.page').then((m) => m.ExecutionKpiPage),
   },
+  {
+    path: 'execution/trayectos',
+    loadComponent: () => import('./features/execution-trayectos/trayectos.page').then((m) => m.TrayectosPage),
+  },
   // ----- Vistas anteriores (legacy) -----
   {
     path: 'dashboard',

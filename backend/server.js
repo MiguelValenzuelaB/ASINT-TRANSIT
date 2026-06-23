@@ -3,6 +3,8 @@ import cors from 'cors';
 import vanguardTransitRouter from './routes/vanguardTransit.js';
 import heuristicRouter from './routes/heuristic.js';
 import puntualidadRouter from './routes/puntualidad.js';
+import tasasOcupacionRouter from './routes/tasas_ocupacion.js';
+import trayectosRouter from './routes/trayectos.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -25,6 +27,8 @@ app.get('/api', (_req, res) => {
       vanguardTransit: '/api/vanguard-transit',
       heuristic: '/api/heuristic',
       puntualidad: '/api/puntualidad',
+      tasasOcupacion: '/api/tasas-ocupacion',
+      trayectos: '/api/trayectos',
     },
   });
 });
@@ -32,6 +36,8 @@ app.get('/api', (_req, res) => {
 app.use('/api/vanguard-transit', vanguardTransitRouter);
 app.use('/api/heuristic', heuristicRouter);
 app.use('/api/puntualidad', puntualidadRouter);
+app.use('/api/tasas-ocupacion', tasasOcupacionRouter);
+app.use('/api/trayectos', trayectosRouter);
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'NOMINAL', uptime: process.uptime(), timestamp: new Date().toISOString() });

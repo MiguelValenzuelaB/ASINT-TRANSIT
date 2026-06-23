@@ -27,8 +27,9 @@ const NAV_GROUPS: readonly NavGroup[] = [
   {
     title: 'Ejecución operacional',
     items: [
-      { path: '/execution/management', label: 'Gestión (Telegram)', shortLabel: 'Gestión', icon: 'forum', keywords: ['gestión', 'telegram', 'bot', 'josué', 'conductores'] },
+      { path: '/execution/management', label: 'Gestión (WhatsApp)', shortLabel: 'Gestión', icon: 'sms', keywords: ['gestión', 'whatsapp', 'bot', 'conductores', 'comunicación'] },
       { path: '/execution/kpi', label: 'Control de gestión (KPI)', shortLabel: 'KPI', icon: 'monitoring', keywords: ['kpi', 'control', 'indicadores', 'desempeño'] },
+      { path: '/execution/trayectos', label: 'Trayectos realizados', shortLabel: 'Trayectos', icon: 'route', keywords: ['trayectos', 'gps', 'recorridos', 'buses', 'mapas', 'gráficos'] },
     ],
   },
   {
