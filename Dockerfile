@@ -20,7 +20,11 @@ RUN pip3 install --no-cache-dir --break-system-packages \
         "numpy>=1.24,<3.0" \
         "matplotlib>=3.7" \
         "seaborn>=0.12" \
-        "openpyxl>=3.1"
+        "openpyxl>=3.1" \
+        "holidays>=0.99" \
+        "lxml>=5.0" \
+        "html5lib>=1.1" \
+        "xlrd>=2.0"
 
 WORKDIR /app
 
