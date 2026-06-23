@@ -33,15 +33,15 @@ interface RunResponse {
 }
 
 @Component({
-  selector: 'app-kpi-tasas',
+  selector: 'app-execution-tasas',
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <section>
+    <section class="px-4 py-6 md:px-8 md:py-8">
       <header class="mb-6">
-        <p class="font-label text-[10px] font-bold uppercase tracking-widest text-primary">Tasas de ocupación</p>
-        <h2 class="mt-1 font-headline text-xl font-bold uppercase tracking-tight text-on-surface md:text-2xl">Demanda por expedición</h2>
+        <p class="font-label text-[10px] font-bold uppercase tracking-widest text-primary">Ejecución operacional</p>
+        <h1 class="mt-1 font-headline text-2xl font-bold uppercase tracking-tight text-on-surface md:text-3xl">Tasas de ocupación</h1>
         <p class="mt-2 max-w-2xl text-sm leading-relaxed text-on-surface-variant">
           Carga el archivo de contadores de pasajeros para calcular tasas de ocupación promedio por servicio, tipo de día y período.
           Se generarán reportes Excel agrupados por línea de transporte.
@@ -155,7 +155,7 @@ interface RunResponse {
     </section>
   `,
 })
-export class KpiTasasComponent {
+export class TasasPage {
   private readonly http = inject(HttpClient);
 
   readonly inputFile = signal<File | null>(null);

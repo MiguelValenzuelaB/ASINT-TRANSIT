@@ -28,6 +28,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/execution-kpi/execution-kpi.page').then((m) => m.ExecutionKpiPage),
   },
   {
+    path: 'execution/tasas',
+    loadComponent: () => import('./features/execution-tasas/tasas.page').then((m) => m.TasasPage),
+  },
+  {
     path: 'execution/trayectos',
     loadComponent: () => import('./features/execution-trayectos/trayectos.page').then((m) => m.TrayectosPage),
   },

@@ -29,6 +29,7 @@ const NAV_GROUPS: readonly NavGroup[] = [
     items: [
       { path: '/execution/management', label: 'Gestión (WhatsApp)', shortLabel: 'Gestión', icon: 'sms', keywords: ['gestión', 'whatsapp', 'bot', 'conductores', 'comunicación'] },
       { path: '/execution/kpi', label: 'Control de gestión (KPI)', shortLabel: 'KPI', icon: 'monitoring', keywords: ['kpi', 'control', 'indicadores', 'desempeño'] },
+      { path: '/execution/tasas', label: 'Tasas de ocupación', shortLabel: 'Tasas', icon: 'groups', keywords: ['tasas', 'ocupación', 'demanda', 'pasajeros', 'contadores'] },
       { path: '/execution/trayectos', label: 'Trayectos realizados', shortLabel: 'Trayectos', icon: 'route', keywords: ['trayectos', 'gps', 'recorridos', 'buses', 'mapas', 'gráficos'] },
     ],
   },
