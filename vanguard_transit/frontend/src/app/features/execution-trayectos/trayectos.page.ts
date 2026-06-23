@@ -113,7 +113,7 @@ interface RunResponse {
               <span class="material-symbols-outlined text-3xl text-secondary">calendar_month</span>
               <div>
                 <h3 class="section-title">Filtro por día (opcional)</h3>
-                <p class="mt-1 text-xs text-on-surface-variant">Filtra a un único día para reducir tiempo de procesamiento (20 seg vs 10 min).</p>
+                <p class="mt-1 text-xs text-on-surface-variant">Filtra a un único día para reducir el tiempo de procesamiento.</p>
                 <p class="mt-2 text-xs text-on-surface-variant">Formato: YYYY-MM-DD</p>
               </div>
             </div>
